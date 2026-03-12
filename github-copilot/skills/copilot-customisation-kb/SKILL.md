@@ -15,13 +15,18 @@ user-invocable: false
 
 | Format | Use when… | File location |
 |---|---|---|
-| **Custom agent** (`.agent.md`) | You need a persistent persona across a conversation, tool restrictions, model preferences, handoffs, or subagent orchestration | `.github/agents/*.agent.md` |
-| **Agent skill** (`SKILL.md`) | You need portable, reusable domain knowledge or a specialised workflow that Copilot should load automatically when relevant | `.github/skills/<name>/SKILL.md` |
-| **Prompt file** (`.prompt.md`) | You need a lightweight, single-task slash command invoked manually | `.github/prompts/*.prompt.md` |
-| **Instruction file** (`.instructions.md`) | You need coding standards or guidelines applied automatically by file glob | `.github/instructions/*.instructions.md` |
-| **Hook** | You need automated actions triggered by agent lifecycle events (e.g. on file save, on tool call) | `.github/hooks/` |
+| **Custom agent** (`.agent.md`) | You need a persistent persona across a conversation, tool restrictions, model preferences, handoffs, or subagent orchestration | `<base dir>/agents/*.agent.md` |
+| **Agent skill** (`SKILL.md`) | You need portable, reusable domain knowledge or a specialised workflow that Copilot should load automatically when relevant | `<base dir>/skills/<name>/SKILL.md` |
+| **Prompt file** (`.prompt.md`) | You need a lightweight, single-task slash command invoked manually | `<base dir>/prompts/*.prompt.md` |
+| **Instruction file** (`.instructions.md`) | You need coding standards or guidelines applied automatically by file glob | `<base dir>/instructions/*.instructions.md` |
+| **Hook** | You need automated actions triggered by agent lifecycle events (e.g. on file save, on tool call) | `<base dir>/hooks/` |
 
 **Default: prefer the simplest format.** If no tool restrictions or persistent persona are needed, a skill or prompt is almost always better than an agent.
+
+## Base Directory
+
+- To customise Copilot for a specific project, add files to the `.github` directory in the root of that project. E.g. `.github/agents/my-agent.agent.md`, `.github/skills/my-skill/SKILL.md`, `.github/prompts/my-prompt.prompt.md`, `.github/instructions/my-instructions.instructions.md`.
+- To share customisations across multiple projects, but only for the current user, add files to under the user home directory. E.g. `~/.copilot/agents/my-agent.agent.md`, `~/.copilot/skills/my-skill/SKILL.md`, `~/.copilot/prompts/my-prompt.prompt.md`, `~/.copilot/instructions/my-instructions.instructions.md`.
 
 ## Key File Structures
 
@@ -77,14 +82,52 @@ applyTo: "src/**/*.ts"   # glob pattern — omit to apply to all files globally
 ---
 ```
 
-## Subagent Pattern: Read/Write Separation Without Context Switching
+## Handoffs vs. Inline Subagents
 
-To enforce a read/write boundary while keeping the user in a single conversation:
+Both patterns enforce a tool boundary between phases (e.g. read-only planning vs. editing). Choose based on whether the user should control the transition.
 
-- **Orchestrator agent**: `tools: ["read", "search", "web/fetch", "agent"]`, `agents: ["apply-agent-name"]`
-- **Apply subagent**: `tools: ["read", "edit"]`, `user-invocable: false`
+### Handoffs — user-driven sequential workflows
 
-The orchestrator researches, analyses, and plans; it then invokes the apply subagent inline to execute edits. The user never sees the subagent in the picker or needs to switch agents manually.
+Use when the user should **review and approve** each phase before the next begins, or when the transition is meaningful enough to surface explicitly.
+
+```yaml
+handoffs:
+  - label: "Button label"
+    agent: "target-agent"
+    prompt: >
+      Apply the following plan exactly as described. Do not deviate from it.
+      Create or modify only the files listed.
+
+      <PLAN>
+      [Paste the full plan summary here before triggering the handoff]
+      </PLAN>
+    send: false   # true = auto-submit without user confirmation
+```
+
+Explicitly instruct the orchestrating agent to paste the full plan summary into the handoff prompt before triggering. This ensures the target agent has all necessary context to implement the plan without needing to reference the conversation history, which may not be reliably passed. The user can review the plan in the prompt before confirming the handoff.
+
+```markdown
+# Workflows
+
+1. **Something** - ...
+2. **Something else** - ...
+3. **Report** - Before triggering the "Apply Changes" handoff, copy the full plan into the handoff prompt in place of `[Paste the full plan summary here before triggering the handoff]`. Then trigger the handoff.
+```
+
+- The pre-filled prompt is the only context reliably passed to the target agent — make it self-contained.
+- Handoff buttons appear after a response completes; the user selects them to advance.
+- Best for: plan → implement, implement → review, any workflow where the user wants a checkpoint.
+
+**VS Code Limitation** - the tools defined in the orchestrating agent are carried over to other agents via a handoff. This is a necessary exception to the general rule that each agent should only include the minimum necessary tools.
+
+### Inline Subagents — agent-driven delegation within one conversation
+
+Use when the transition is implementation detail the user doesn't need to approve, and the result must be returned to the orchestrator to continue.
+
+- Orchestrator: add "agent" to tools and agents: ["subagent-name"]
+- Subagent: user-invocable: false, scoped tools only
+- The full conversation context is available to the orchestrator when it invokes the subagent.
+- Best for: isolated research, parallel analysis, autonomous apply steps where no checkpoint is needed.
 
 ## Tool Loading Priority
 
