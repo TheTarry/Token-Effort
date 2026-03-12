@@ -18,3 +18,6 @@ A collection of AI agents, prompts, and skills that do just enough to avoid bein
    ```bash
    ./install.sh
    ```
+
+Windows users: The install script requires Bash. Run it from WSL or Git Bash.
+Files are installed to ~/.copilot/ (e.g. C:\Users\<you>\.copilot\ on Windows).
