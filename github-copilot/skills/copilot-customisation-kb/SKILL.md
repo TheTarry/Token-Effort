@@ -63,6 +63,9 @@ disable-model-invocation: true  # only allow explicit /slash invocation; model w
 
 The `name` field **must** match the parent directory name exactly or the skill will not load.
 
+> **`user-invocable: false`** hides the skill from the `/` slash command menu but Copilot will still load it automatically when the description matches the context.  
+> **`disable-model-invocation: true`** goes further — it prevents Copilot from loading the skill automatically; it can only be loaded via an explicit `/` invocation. Use this when you want full manual control over when the skill is applied.
+
 ### Prompt File (`.prompt.md`)
 
 ```yaml
