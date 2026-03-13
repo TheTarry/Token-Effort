@@ -39,8 +39,7 @@ description: "Shown in agents dropdown"
 argument-hint: "Optional input hint"
 tools: ["read", "search", "edit"]    # minimum necessary
 agents: ["subagent-name"]            # omit if no subagents; [] blocks all
-user-invocable: false                # set to hide from picker (subagent-only)
-disable-model-invocation: true       # set to prevent subagent use by other agents
+user-invocable: false                # set to hide from picker (subagents and handoff targets)
 handoffs:
   - label: "Button label"
     agent: "target-agent"
