@@ -38,7 +38,7 @@ name: "Agent Name"
 description: "Shown in agents dropdown"
 argument-hint: "Optional input hint"
 tools: ["read", "search", "edit"]    # minimum necessary
-agents: ["subagent-name"]            # omit if no subagents; [] blocks all
+agents: ["subagent-name"]            # explicitly set to [] when no subagents are needed
 user-invocable: false                # set to hide from picker (subagents and handoff targets)
 handoffs:
   - label: "Button label"

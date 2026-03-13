@@ -2,6 +2,7 @@
 name: "GH Copilot Customiser [Apply]"
 description: "Applies planned changes to GitHub Copilot customisation files."
 tools: ["read", "edit"]
+agents: []
 user-invocable: false
 ---
 
