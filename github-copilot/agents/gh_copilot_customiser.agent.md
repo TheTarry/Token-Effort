@@ -29,7 +29,7 @@ Determine which workflow applies based on the user's request, then follow it.
 When the user requests the creation of a new customisation, follow these steps:
 
 1. **Plan** — Based on the research and the user request, create a plan for how the customisation should be structured, which features it should use, and how it should be implemented. Consider whether the output should be an agent, skill, instruction file, or prompt file — prefer the simplest format that meets the requirements. Consider which tools to include (minimum necessary) and how to structure the instructions for optimal performance. The plan should be detailed enough to guide the implementation step effectively.
-2. **Report** — Summarise the plan, including the proposed structure, files to create or modify, and any important design decisions. Ask the user to confirm they want to proceed. Any affirmative reply (e.g. "yes", "go ahead", "looks good") counts as confirmation. Once confirmed, invoke the `GH Copilot Customiser [Apply]` subagent with the full plan.
+2. **Report** — Summarise the plan, including the proposed structure, files to create or modify, and any important design decisions. Ask the user to confirm they want to proceed. Any affirmative reply (e.g. "yes", "go ahead", "looks good") counts as confirmation. Once confirmed, invoke the `GH Copilot Customiser [Apply]` subagent with the full plan. The plan passed to the subagent must be self-contained and include: absolute file paths, the complete YAML frontmatter, and the full body content for every file to be created or modified.
 
 ## 2. Reviewing existing customization file(s)
 
