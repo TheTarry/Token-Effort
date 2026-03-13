@@ -19,14 +19,14 @@ user-invocable: false
 | **Agent skill** (`SKILL.md`) | You need portable, reusable domain knowledge or a specialised workflow that Copilot should load automatically when relevant | `<base dir>/skills/<name>/SKILL.md` |
 | **Prompt file** (`.prompt.md`) | You need a lightweight, single-task slash command invoked manually | `<base dir>/prompts/*.prompt.md` |
 | **Instruction file** (`.instructions.md`) | You need coding standards or guidelines applied automatically by file glob | `<base dir>/instructions/*.instructions.md` |
-| **Hook** | You need automated actions triggered by agent lifecycle events (e.g. on file save, on tool call) | `<base dir>/hooks/` |
+| **Hook** | You need automated actions triggered by agent lifecycle events (e.g. on file save, on tool call) | `<base dir>/hooks/*.json` |
 
 **Default: prefer the simplest format.** If no tool restrictions or persistent persona are needed, a skill or prompt is almost always better than an agent.
 
 ## Base Directory
 
-- To customise Copilot for a specific project, add files to the `.github` directory in the root of that project. E.g. `.github/agents/my-agent.agent.md`, `.github/skills/my-skill/SKILL.md`, `.github/prompts/my-prompt.prompt.md`, `.github/instructions/my-instructions.instructions.md`.
-- To share customisations across multiple projects, but only for the current user, add files to under the user home directory. E.g. `~/.copilot/agents/my-agent.agent.md`, `~/.copilot/skills/my-skill/SKILL.md`, `~/.copilot/prompts/my-prompt.prompt.md`, `~/.copilot/instructions/my-instructions.instructions.md`.
+- To customise Copilot for a specific project, add files to the `.github` directory in the root of that project. E.g. `.github/agents/my-agent.agent.md`, `.github/skills/my-skill/SKILL.md`, `.github/prompts/my-prompt.prompt.md`, `.github/instructions/my-instructions.instructions.md`, `.github/hooks/my-hook.json`.
+- To share customisations across multiple projects, but only for the current user, add files to under the user home directory. E.g. `~/.copilot/agents/my-agent.agent.md`, `~/.copilot/skills/my-skill/SKILL.md`, `~/.copilot/prompts/my-prompt.prompt.md`, `~/.copilot/instructions/my-instructions.instructions.md`, `~/.copilot/hooks/my-hook.json`.
 
 ## Key File Structures
 
@@ -81,6 +81,38 @@ tools: ["read", "edit"]   # overrides the referenced agent's tool list if specif
 ```yaml
 ---
 applyTo: "src/**/*.ts"   # glob pattern — omit to apply to all files globally
+---
+```
+
+### Hook
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "echo 'The session has started!'"
+      }
+    ]
+  }
+}
+```
+
+Hooks fire automatically on agent lifecycle events without user interaction.
+
+### Agent-scoped hooks
+
+A custom agent can include `hooks:` in its YAML frontmatter to define hooks that apply only to that agent.
+
+```yaml
+---
+name: "Chatty agent"
+description: "Agent that says hi at the start of each session"
+hooks:
+  SessionStart:
+    - type: command
+      command: "echo 'Welcome to the session!'"
 ---
 ```
 
@@ -145,4 +177,4 @@ Fetch these only when you need detail on a specific feature. Do not fetch specul
 | Subagent invocation and `agents:` field | https://code.visualstudio.com/docs/copilot/agents/subagents |
 | Agent skills specification and portability | https://code.visualstudio.com/docs/copilot/customization/agent-skills |
 | MCP servers | https://code.visualstudio.com/docs/copilot/customization/mcp-servers |
-| Hooks syntax and lifecycle events | https://code.visualstudio.com/docs/copilot/customization/hooks |
+| Hooks, Agent-scoped hooks and lifecycle events | https://code.visualstudio.com/docs/copilot/customization/hooks |
