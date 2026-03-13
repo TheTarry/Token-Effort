@@ -40,7 +40,7 @@ When the user requests the creation of a new customisation, follow these steps:
 3. **Plan** - Based on the research and the user request, create a plan for how the customisation should be structured, which features it should use, and how it should be implemented. Consider whether the output should be an agent, skill, instruction file, or prompt file — prefer the simplest format that meets the requirements. Consider which tools to include (minimum necessary) and how to structure the instructions for optimal performance. The plan should be detailed enough to guide the implementation step effectively.
 4. **Report** - Summarise the plan, including the proposed structure, files to create or modify, and any important design decisions. Before triggering the "Apply Changes" handoff, copy the full plan into the handoff prompt in place of `[Paste the full plan summary here before triggering the handoff]`. Then trigger the handoff.
 
-## 2. Reviewing or editing existing customization file(s)
+## 2. Reviewing existing customization file(s)
 
 When the user requests a review or edit of existing customization file(s), follow these steps:
 
