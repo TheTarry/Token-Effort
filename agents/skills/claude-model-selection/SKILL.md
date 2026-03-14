@@ -4,9 +4,10 @@ description: >
   Knowledge base for selecting the right Claude model in Claude Code
   customisations. Covers when to pin a model vs omit it, task-based model
   selection framework, and the current Anthropic model catalogue with API
-  identifiers. Load when deciding which model to specify in the model: field
-  of a Claude Code agent, or when advising on model choice for any Claude
-  Code task.
+  identifiers. Make sure to use this skill whenever the user is choosing a
+  model for a Claude Code agent — including questions like "which model should
+  I use?", "should I pin a model?", or comparing Sonnet vs Opus — even if
+  they don't explicitly say "model selection".
 compatibility: Designed for Claude Code (Anthropic)
 ---
 

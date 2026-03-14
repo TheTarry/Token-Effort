@@ -5,8 +5,11 @@ description: >
   choosing between agents, skills, prompt files, instruction files, and hooks;
   YAML frontmatter schemas for each format; the Shim Pattern for multi-platform
   agents; subagent read/write separation patterns; tool-loading priority rules;
-  and targeted reference URLs. Load when creating, editing, reviewing, or
-  auditing any GitHub Copilot customisation file.
+  and targeted reference URLs. Make sure to use this skill whenever the user
+  is creating, editing, reviewing, or auditing any GitHub Copilot
+  customisation file — including new agents, skills, prompt files,
+  instruction files, or hooks — even if they don't explicitly say
+  "customise".
 compatibility: Designed for GitHub Copilot (Microsoft)
 ---
 

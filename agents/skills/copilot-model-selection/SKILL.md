@@ -4,9 +4,11 @@ description: >
   Knowledge base for selecting the right AI model in GitHub Copilot
   customisations. Covers when to pin a model vs use Auto, task-based model
   selection framework, the current model catalogue with identifiers and
-  multipliers, plan availability, and model identifier format. Load when
-  deciding which model to specify in the model: field of a GitHub Copilot
-  custom agent, or when advising on model choice for any Copilot task.
+  multipliers, plan availability, and model identifier format. Make sure to
+  use this skill whenever the user is choosing a model for a Copilot agent or
+  task — including questions about pinning vs Auto, comparing models, or
+  finding the right model identifier — even if they don't explicitly say
+  "model selection".
 compatibility: Designed for GitHub Copilot (Microsoft)
 ---
 

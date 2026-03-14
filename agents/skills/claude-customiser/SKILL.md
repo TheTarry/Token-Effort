@@ -2,11 +2,13 @@
 name: claude-customiser
 description: >
   Domain knowledge for Claude Code customisations: decision framework for
-  choosing between agents, skills, CLAUDE.md, and hooks; YAML frontmatter
-  schemas for each format; the Shim Pattern for multi-platform agents;
-  subagent patterns; tool selection guidance; and targeted reference URLs.
-  Load when creating, editing, reviewing, or auditing any Claude Code
-  customisation file.
+  choosing between agents, skills, CLAUDE.md, rules, and hooks; YAML
+  frontmatter schemas for each format; the Shim Pattern for multi-platform
+  agents; subagent patterns; tool selection guidance; and targeted reference
+  URLs. Make sure to use this skill whenever the user is creating, editing,
+  reviewing, or auditing any Claude Code customisation file — including new
+  agents, skills, hooks, CLAUDE.md, or rules — even if they don't explicitly
+  say "customise".
 compatibility: Designed for Claude Code (Anthropic)
 ---
 
