@@ -21,49 +21,65 @@ A collection of AI agents and skills that do just enough to avoid being replaced
 
 ### GitHub Copilot
 
-Files install to `~/.copilot/`. Agents are available via `@Customiser` in Copilot Chat. Skills load automatically when relevant.
+Files install to `~/.github/`. Agents are available via `@Customiser` in Copilot Chat. Skills load automatically when relevant.
 
 ### Claude Code
 
 Files install to `~/.claude/`. Agents are available via `/agents` in Claude Code. Skills load automatically when relevant, or invoke directly with `/skill-name`.
 
-## 🏗️ Adding New Agents
+## 🏗️ How it works
 
-Agents that work on both platforms live in `agents/` as a single source file. Each file has two platform sections and a shared body:
+Install uses the **Shim Pattern**. Agent body content lives in `ai/agents/` and is copied to
+`~/.ai/agents/` — a shared, platform-agnostic source of truth. Each platform has a small shim
+file (in `claude/agents/` or `copilot/agents/`) containing only the platform-specific frontmatter
+and a pointer to the shared body:
 
-```
-#[platform:copilot]
-# PLATFORM: GitHub Copilot
-# MY_VAR: some value for Copilot
----
-name: "My Agent"
-model: "Claude Sonnet 4.6 (copilot)"
-tools: ["read", "edit"]
----
-
-#[platform:claude]
-# PLATFORM: Claude Code
-# MY_VAR: some other value for Claude
+```markdown
 ---
 name: "My Agent"
 model: claude-sonnet-4-6
 tools: [read, edit]
 ---
-
-#[body]
-You are an expert in {{PLATFORM}} things.
-Here is my platform-specific value: {{MY_VAR}}.
+Read and follow the agent instructions at: ~/.ai/agents/my-agent.md
 ```
 
-- **`#[platform:X]`** — marks the start of a platform section
-- **`# KEY: value`** lines above `---` — metadata read by the install script, stripped from the final file
-- **`{{KEY}}`** in `#[body]` — replaced with the matching `# KEY: value` from the active platform section
-- Adding a new substitution variable requires only a `# VAR: value` line in each platform section and a `{{VAR}}` in the body — no changes to `install.sh`
-- Output filenames are derived automatically: `my-agent.agent.md` for Copilot, `my-agent.md` for Claude
+**Updating agent instructions** — edit the file in `~/.ai/agents/` directly. Changes take
+effect immediately without reinstalling. Re-run `install.sh` to pull new versions from the repo.
 
-Skills with platform-specific content (different schemas, reference URLs, model catalogues) live in `github-copilot/skills/` or `claude/skills/` and are copied as-is.
+## 🏗️ Adding New Agents
+
+To add a new agent, create three files:
+
+**`ai/agents/my-agent.md`** — platform-agnostic body (no frontmatter):
+```markdown
+You are an expert in AI customisations.
+Write platform-agnostic instructions here.
+```
+
+**`claude/agents/my-agent.md`** — Claude shim:
+```markdown
+---
+name: "My Agent"
+model: claude-sonnet-4-6
+tools: [read, edit]
+---
+Read and follow the agent instructions at: ~/.ai/agents/my-agent.md
+```
+
+**`copilot/agents/my-agent.agent.md`** — Copilot shim (note `.agent.md` extension):
+```markdown
+---
+name: "My Agent"
+model: "Claude Sonnet 4.6 (copilot)"
+tools: ["read", "edit"]
+---
+Read and follow the agent instructions at: ~/.ai/agents/my-agent.md
+```
+
+Skills with platform-specific content (different schemas, reference URLs, model catalogues)
+live in `copilot/skills/` or `claude/skills/` and are copied as-is.
 
 ## 💻 Windows Note
 
 The install script requires Bash. Run it from WSL or Git Bash.
-Files install to `~/.copilot/` and/or `~/.claude/` (e.g. `C:\Users\<you>\.copilot\` on Windows).
+Files install to `~/.github/`, `~/.claude/`, and `~/.ai/` (e.g. `C:\Users\<you>\.claude\` on Windows).

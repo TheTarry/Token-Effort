@@ -1,5 +1,5 @@
 ---
-name: claude-model-selection-kb
+name: model-selection-kb
 description: >
   Knowledge base for selecting the right Claude model in Claude Code customisations.
   Covers when to pin a model vs omit it, task-based model selection framework,

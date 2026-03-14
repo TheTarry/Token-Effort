@@ -1,5 +1,5 @@
 ---
-name: copilot-model-selection-kb
+name: model-selection-kb
 description: >
   Knowledge base for selecting the right AI model in GitHub Copilot customisations.
   Covers when to pin a model vs use Auto, task-based model selection framework,

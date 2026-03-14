@@ -1,5 +1,5 @@
 ---
-name: claude-customisation-kb
+name: customisation-kb
 description: >
   Domain knowledge for Claude Code customisations: decision framework for
   choosing between agents, skills, CLAUDE.md, and hooks; YAML frontmatter
@@ -28,6 +28,33 @@ user-invocable: false
 - To customise Claude Code for a specific project, add files to the `.claude` directory in the root of that project. E.g. `.claude/agents/my-agent.md`, `.claude/skills/my-skill/SKILL.md`, `CLAUDE.md`.
 - To share customisations across multiple projects, but only for the current user, add files under the user home directory. E.g. `~/.claude/agents/my-agent.md`, `~/.claude/skills/my-skill/SKILL.md`, `~/.claude/CLAUDE.md`.
 
+## Shim Pattern (multi-platform agents)
+
+Use the Shim Pattern when an agent must work across both Claude Code and GitHub Copilot from
+a single shared body. Each agent is three files:
+
+| File | Repo path | Installs to | Contents |
+|---|---|---|---|
+| Body | `ai/agents/<name>.md` | `~/.ai/agents/<name>.md` | Platform-agnostic instructions; no frontmatter |
+| Claude shim | `claude/agents/<name>.md` | `~/.claude/agents/<name>.md` | Claude frontmatter + one read instruction |
+| Copilot shim | `copilot/agents/<name>.agent.md` | `~/.github/agents/<name>.agent.md` | Copilot frontmatter + one read instruction |
+
+`install.sh` copies each directory tree to its target: `ai/*` → `~/.ai/*`,
+`claude/*` → `~/.claude/*`, `copilot/*` → `~/.github/*`.
+
+**Shim format** — frontmatter followed by a single instruction pointing at the body:
+
+```markdown
+---
+name: "Agent Name"
+model: claude-sonnet-4-6
+tools: [read, edit]
+---
+Read and follow the agent instructions at: ~/.ai/agents/<name>.md
+```
+
+Shims use `~` (never an expanded absolute path) for cross-OS portability.
+
 ## Key File Structures
 
 ### Agent (`.md`)
@@ -36,7 +63,7 @@ user-invocable: false
 ---
 name: "Agent Name"
 description: "Shown in /agents list; also used to match when Claude auto-selects agents"
-model: claude-sonnet-4-6       # optional — pin a specific model; see claude-model-selection-kb skill
+model: claude-sonnet-4-6       # optional — pin a specific model; see model-selection-kb skill
 tools: [read, write, edit, bash, glob, grep, web_search, agent]  # minimum necessary
 disallowedTools: [bash]        # optional — explicitly deny tools
 permissionMode: acceptEdits    # optional — default | acceptEdits | dontAsk | bypassPermissions | plan
@@ -194,4 +221,4 @@ Fetch these only when you need detail on a specific feature. Do not fetch specul
 | Agents / subagents overview and format | https://docs.anthropic.com/en/docs/claude-code/sub-agents |
 | CLAUDE.md, rules, and memory | https://docs.anthropic.com/en/docs/claude-code/memory |
 | Hooks and lifecycle events | https://docs.anthropic.com/en/docs/claude-code/hooks |
-| Model selection, identifiers | Load the `claude-model-selection-kb` skill — it contains the full catalogue and task-based guidance |
+| Model selection, identifiers | Load the `model-selection-kb` skill — it contains the full catalogue and task-based guidance |

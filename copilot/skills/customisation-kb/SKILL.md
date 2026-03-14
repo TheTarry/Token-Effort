@@ -1,5 +1,5 @@
 ---
-name: copilot-customisation-kb
+name: customisation-kb
 description: >
   Domain knowledge for GitHub Copilot customisations: decision framework for
   choosing between agents, skills, prompt files, instruction files, and hooks;
@@ -28,6 +28,33 @@ user-invocable: false
 - To customise Copilot for a specific project, add files to the `.github` directory in the root of that project. E.g. `.github/agents/my-agent.agent.md`, `.github/skills/my-skill/SKILL.md`, `.github/prompts/my-prompt.prompt.md`, `.github/instructions/my-instructions.instructions.md`, `.github/hooks/my-hook.json`.
 - To share customisations across multiple projects, but only for the current user, add files to under the user home directory. E.g. `~/.copilot/agents/my-agent.agent.md`, `~/.copilot/skills/my-skill/SKILL.md`, `~/.copilot/prompts/my-prompt.prompt.md`, `~/.copilot/instructions/my-instructions.instructions.md`, `~/.copilot/hooks/my-hook.json`.
 
+## Shim Pattern (multi-platform agents)
+
+Use the Shim Pattern when an agent must work across both Claude Code and GitHub Copilot from
+a single shared body. Each agent is three files:
+
+| File | Repo path | Installs to | Contents |
+|---|---|---|---|
+| Body | `ai/agents/<name>.md` | `~/.ai/agents/<name>.md` | Platform-agnostic instructions; no frontmatter |
+| Claude shim | `claude/agents/<name>.md` | `~/.claude/agents/<name>.md` | Claude frontmatter + one read instruction |
+| Copilot shim | `copilot/agents/<name>.agent.md` | `~/.github/agents/<name>.agent.md` | Copilot frontmatter + one read instruction |
+
+`install.sh` copies each directory tree to its target: `ai/*` → `~/.ai/*`,
+`claude/*` → `~/.claude/*`, `copilot/*` → `~/.github/*`.
+
+**Shim format** — frontmatter followed by a single instruction pointing at the body:
+
+```markdown
+---
+name: "Agent Name"
+model: "Claude Sonnet 4.6 (copilot)"
+tools: ["read", "edit"]
+---
+Read and follow the agent instructions at: ~/.ai/agents/<name>.md
+```
+
+Shims use `~` (never an expanded absolute path) for cross-OS portability.
+
 ## Key File Structures
 
 ### Custom Agent (`.agent.md`)
@@ -37,7 +64,7 @@ user-invocable: false
 name: "Agent Name"
 description: "Shown in agents dropdown"
 argument-hint: "Optional input hint"
-model: "Claude Sonnet 4.6 (copilot)" # optional — pin a specific model; see copilot-model-selection-kb skill for guidance
+model: "Claude Sonnet 4.6 (copilot)" # optional — pin a specific model; see model-selection-kb skill for guidance
 tools: ["read", "search", "edit"]    # minimum necessary
 agents: ["subagent-name"]            # explicitly set to [] when no subagents are needed
 user-invocable: false                # explicitly set to show/hide from picker (false for subagents and handoff targets)
@@ -179,4 +206,4 @@ Fetch these only when you need detail on a specific feature. Do not fetch specul
 | Agent skills specification and portability | https://code.visualstudio.com/docs/copilot/customization/agent-skills |
 | MCP servers | https://code.visualstudio.com/docs/copilot/customization/mcp-servers |
 | Hooks, Agent-scoped hooks and lifecycle events | https://code.visualstudio.com/docs/copilot/customization/hooks |
-| Model selection, identifiers, and multipliers | Load the `copilot-model-selection-kb` skill — it contains the full catalogue and task-based guidance |
+| Model selection, identifiers, and multipliers | Load the `model-selection-kb` skill — it contains the full catalogue and task-based guidance |
