@@ -1,12 +1,13 @@
 ---
-name: model-selection-kb
+name: copilot-model-selection
 description: >
-  Knowledge base for selecting the right AI model in GitHub Copilot customisations.
-  Covers when to pin a model vs use Auto, task-based model selection framework,
-  current model catalogue with identifiers and multipliers, plan availability,
-  and model identifier format. Load when deciding which model to specify in the
-  `model:` field of a custom agent, or when advising on model choice for any task.
-user-invocable: false
+  Knowledge base for selecting the right AI model in GitHub Copilot
+  customisations. Covers when to pin a model vs use Auto, task-based model
+  selection framework, the current model catalogue with identifiers and
+  multipliers, plan availability, and model identifier format. Load when
+  deciding which model to specify in the model: field of a GitHub Copilot
+  custom agent, or when advising on model choice for any Copilot task.
+compatibility: Designed for GitHub Copilot (Microsoft)
 ---
 
 # GitHub Copilot Model Selection — Domain Knowledge

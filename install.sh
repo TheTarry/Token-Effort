@@ -33,41 +33,50 @@ copy_dir() {
 }
 
 # ---------------------------------------------------------------------------
-# install_copilot — copies copilot/* to ~/.copilot and ai/* to ~/.ai
+# install_skills — copies agents/skills/* to ~/.agents/skills
+#
+# Skills follow the agentskills.io cross-client convention:
+#   ~/.agents/skills/  — cross-client interoperability path
+# ---------------------------------------------------------------------------
+install_skills() {
+  local src="$SCRIPT_DIR/agents/skills"
+  [[ -d "$src" ]] || return 0
+
+  copy_dir "$src" "$HOME/.agents/skills" "🧠"
+}
+
+# ---------------------------------------------------------------------------
+# install_agent_bodies — copies agents/custom_agents/* to ~/.agents/custom_agents
+# ---------------------------------------------------------------------------
+install_agent_bodies() {
+  local src="$SCRIPT_DIR/agents/custom_agents"
+  [[ -d "$src" ]] || return 0
+
+  copy_dir "$src" "$HOME/.agents/custom_agents" "🤖"
+}
+
+# ---------------------------------------------------------------------------
+# install_copilot — copies copilot/* to ~/.copilot
 # ---------------------------------------------------------------------------
 install_copilot() {
   local dest="$HOME/.copilot"
   echo -e "\n${CYAN}${BOLD}🐙 Installing GitHub Copilot customisations...${RESET}"
   echo -e "${YELLOW}   Target : $dest${RESET}"
 
-  local count=0
-
   copy_dir "$SCRIPT_DIR/copilot" "$dest" "🐙"
-  count=$(find "$SCRIPT_DIR/copilot" -type f | wc -l)
-
-  copy_dir "$SCRIPT_DIR/ai" "$HOME/.ai" "🤖"
-  count=$(( count + $(find "$SCRIPT_DIR/ai" -type f | wc -l) ))
-
-  echo -e "\n${GREEN}${BOLD}  ✅ Copilot: $count file(s) installed${RESET}"
+  echo -e "\n${GREEN}${BOLD}  ✅ Copilot: $(find "$SCRIPT_DIR/copilot" -type f | wc -l) file(s) installed${RESET}"
 }
 
 # ---------------------------------------------------------------------------
-# install_claude — copies claude/* to ~/.claude and ai/* to ~/.ai
+# install_claude — copies claude/* to ~/.claude
 # ---------------------------------------------------------------------------
 install_claude() {
   local dest="$HOME/.claude"
   echo -e "\n${MAGENTA}${BOLD}🤖 Installing Claude Code customisations...${RESET}"
   echo -e "${YELLOW}   Target : $dest${RESET}"
 
-  local count=0
-
   copy_dir "$SCRIPT_DIR/claude" "$dest" "🤖"
-  count=$(find "$SCRIPT_DIR/claude" -type f | wc -l)
-
-  copy_dir "$SCRIPT_DIR/ai" "$HOME/.ai" "🤖"
-  count=$(( count + $(find "$SCRIPT_DIR/ai" -type f | wc -l) ))
-
-  echo -e "\n${MAGENTA}${BOLD}  ✅ Claude: $count file(s) installed${RESET}"
+  echo -e "\n${MAGENTA}${BOLD}  ✅ Claude: $(find "$SCRIPT_DIR/claude" -type f | wc -l) file(s) installed${RESET}"
 }
 
 # ---------------------------------------------------------------------------
@@ -79,7 +88,7 @@ echo -e "${YELLOW}  Low-stakes intelligence for high-latency humans${RESET}"
 echo -e ""
 echo -e "  Which platform(s) would you like to set up?"
 echo -e ""
-echo -e "  ${BOLD}[1]${RESET} 🐙 GitHub Copilot   ${YELLOW}(~/.github)${RESET}"
+echo -e "  ${BOLD}[1]${RESET} 🐙 GitHub Copilot   ${YELLOW}(~/.copilot)${RESET}"
 echo -e "  ${BOLD}[2]${RESET} 🤖 Claude Code       ${MAGENTA}(~/.claude)${RESET}"
 echo -e "  ${BOLD}[3]${RESET} ✨ Both              ${GREEN}(why not)${RESET}"
 echo -e ""
@@ -93,6 +102,11 @@ while true; do
     *) echo -e "  ${RED}That's not a valid option. Try 1, 2, or 3.${RESET}" ;;
   esac
 done
+
+# Always install shared cross-platform resources
+echo -e "\n${GREEN}${BOLD}  Installing shared resources...${RESET}"
+install_agent_bodies
+install_skills
 
 echo -e ""
 echo -e "${GREEN}${BOLD}  Done. Now go do less.${RESET}"

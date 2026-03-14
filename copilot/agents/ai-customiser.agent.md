@@ -7,4 +7,4 @@ tools: ["read", "search", "web/fetch", "agent"]
 agents: ["AI Customiser [Apply]"]
 user-invocable: true
 ---
-Read and follow the agent instructions at: ~/.ai/agents/ai-customiser.md
+Read and follow the agent instructions at: ~/.agents/custom_agents/ai-customiser/ai-customiser.md

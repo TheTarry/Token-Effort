@@ -1,12 +1,13 @@
 ---
-name: customisation-kb
+name: copilot-customiser
 description: >
   Domain knowledge for GitHub Copilot customisations: decision framework for
   choosing between agents, skills, prompt files, instruction files, and hooks;
-  YAML frontmatter schemas for each format; subagent read/write separation patterns;
-  tool-loading priority rules; and targeted reference URLs. Load when creating,
-  editing, reviewing, or auditing any Copilot customisation file.
-user-invocable: false
+  YAML frontmatter schemas for each format; the Shim Pattern for multi-platform
+  agents; subagent read/write separation patterns; tool-loading priority rules;
+  and targeted reference URLs. Load when creating, editing, reviewing, or
+  auditing any GitHub Copilot customisation file.
+compatibility: Designed for GitHub Copilot (Microsoft)
 ---
 
 # GitHub Copilot Customisation — Domain Knowledge
@@ -35,12 +36,12 @@ a single shared body. Each agent is three files:
 
 | File | Repo path | Installs to | Contents |
 |---|---|---|---|
-| Body | `ai/agents/<name>.md` | `~/.ai/agents/<name>.md` | Platform-agnostic instructions; no frontmatter |
+| Body | `agents/custom_agents/<name>/<name>.md` | `~/.agents/custom_agents/<name>/<name>.md` | Platform-agnostic instructions; no frontmatter |
 | Claude shim | `claude/agents/<name>.md` | `~/.claude/agents/<name>.md` | Claude frontmatter + one read instruction |
-| Copilot shim | `copilot/agents/<name>.agent.md` | `~/.github/agents/<name>.agent.md` | Copilot frontmatter + one read instruction |
+| Copilot shim | `copilot/agents/<name>.agent.md` | `~/.copilot/agents/<name>.agent.md` | Copilot frontmatter + one read instruction |
 
-`install.sh` copies each directory tree to its target: `ai/*` → `~/.ai/*`,
-`claude/*` → `~/.claude/*`, `copilot/*` → `~/.github/*`.
+`install.sh` copies each directory tree to its target: `agents/custom_agents/*` → `~/.agents/custom_agents/*`,
+`agents/skills/*` → `~/.agents/skills/*`, `claude/*` → `~/.claude/*`, `copilot/*` → `~/.copilot/*`.
 
 **Shim format** — frontmatter followed by a single instruction pointing at the body:
 
@@ -50,7 +51,7 @@ name: "Agent Name"
 model: "Claude Sonnet 4.6 (copilot)"
 tools: ["read", "edit"]
 ---
-Read and follow the agent instructions at: ~/.ai/agents/<name>.md
+Read and follow the agent instructions at: ~/.agents/custom_agents/<name>/<name>.md
 ```
 
 Shims use `~` (never an expanded absolute path) for cross-OS portability.
@@ -64,7 +65,7 @@ Shims use `~` (never an expanded absolute path) for cross-OS portability.
 name: "Agent Name"
 description: "Shown in agents dropdown"
 argument-hint: "Optional input hint"
-model: "Claude Sonnet 4.6 (copilot)" # optional — pin a specific model; see model-selection-kb skill for guidance
+model: "Claude Sonnet 4.6 (copilot)" # optional — pin a specific model; see copilot-model-selection skill for guidance
 tools: ["read", "search", "edit"]    # minimum necessary
 agents: ["subagent-name"]            # explicitly set to [] when no subagents are needed
 user-invocable: false                # explicitly set to show/hide from picker (false for subagents and handoff targets)
@@ -91,7 +92,7 @@ disable-model-invocation: true  # only allow explicit /slash invocation; model w
 
 The `name` field **must** match the parent directory name exactly or the skill will not load.
 
-> **`user-invocable: false`** hides the skill from the `/` slash command menu but Copilot will still load it automatically when the description matches the context.  
+> **`user-invocable: false`** hides the skill from the `/` slash command menu but Copilot will still load it automatically when the description matches the context.
 > **`disable-model-invocation: true`** goes further — it prevents Copilot from loading the skill automatically; it can only be loaded via an explicit `/` invocation. Use this when you want full manual control over when the skill is applied.
 
 ### Prompt File (`.prompt.md`)
@@ -206,4 +207,4 @@ Fetch these only when you need detail on a specific feature. Do not fetch specul
 | Agent skills specification and portability | https://code.visualstudio.com/docs/copilot/customization/agent-skills |
 | MCP servers | https://code.visualstudio.com/docs/copilot/customization/mcp-servers |
 | Hooks, Agent-scoped hooks and lifecycle events | https://code.visualstudio.com/docs/copilot/customization/hooks |
-| Model selection, identifiers, and multipliers | Load the `model-selection-kb` skill — it contains the full catalogue and task-based guidance |
+| Model selection, identifiers, and multipliers | Load the `copilot-model-selection` skill — it contains the full catalogue and task-based guidance |

@@ -1,12 +1,13 @@
 ---
-name: model-selection-kb
+name: claude-model-selection
 description: >
-  Knowledge base for selecting the right Claude model in Claude Code customisations.
-  Covers when to pin a model vs omit it, task-based model selection framework,
-  current Anthropic model catalogue with API identifiers. Load when deciding which
-  model to specify in the `model:` field of a Claude Code agent or skill, or when
-  advising on model choice for any task.
-user-invocable: false
+  Knowledge base for selecting the right Claude model in Claude Code
+  customisations. Covers when to pin a model vs omit it, task-based model
+  selection framework, and the current Anthropic model catalogue with API
+  identifiers. Load when deciding which model to specify in the model: field
+  of a Claude Code agent, or when advising on model choice for any Claude
+  Code task.
+compatibility: Designed for Claude Code (Anthropic)
 ---
 
 # Claude Code Model Selection — Domain Knowledge

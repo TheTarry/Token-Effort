@@ -1,12 +1,13 @@
 ---
-name: customisation-kb
+name: claude-customiser
 description: >
   Domain knowledge for Claude Code customisations: decision framework for
   choosing between agents, skills, CLAUDE.md, and hooks; YAML frontmatter
-  schemas for each format; subagent patterns; tool selection guidance; and
-  targeted reference URLs. Load when creating, editing, reviewing, or auditing
-  any Claude Code customisation file.
-user-invocable: false
+  schemas for each format; the Shim Pattern for multi-platform agents;
+  subagent patterns; tool selection guidance; and targeted reference URLs.
+  Load when creating, editing, reviewing, or auditing any Claude Code
+  customisation file.
+compatibility: Designed for Claude Code (Anthropic)
 ---
 
 # Claude Code Customisation — Domain Knowledge
@@ -25,8 +26,8 @@ user-invocable: false
 
 ## Base Directory
 
-- To customise Claude Code for a specific project, add files to the `.claude` directory in the root of that project. E.g. `.claude/agents/my-agent.md`, `.claude/skills/my-skill/SKILL.md`, `CLAUDE.md`.
-- To share customisations across multiple projects, but only for the current user, add files under the user home directory. E.g. `~/.claude/agents/my-agent.md`, `~/.claude/skills/my-skill/SKILL.md`, `~/.claude/CLAUDE.md`.
+- To customise Claude Code for a specific project, add files to the `.claude` directory in the root of that project. E.g. `.claude/agents/my-agent.md`, `.agents/skills/my-skill/SKILL.md`, `CLAUDE.md`.
+- To share customisations across multiple projects, but only for the current user, add files under the user home directory. E.g. `~/.claude/agents/my-agent.md`, `~/.agents/skills/my-skill/SKILL.md`, `~/.claude/CLAUDE.md`.
 
 ## Shim Pattern (multi-platform agents)
 
@@ -35,12 +36,12 @@ a single shared body. Each agent is three files:
 
 | File | Repo path | Installs to | Contents |
 |---|---|---|---|
-| Body | `ai/agents/<name>.md` | `~/.ai/agents/<name>.md` | Platform-agnostic instructions; no frontmatter |
+| Body | `agents/custom_agents/<name>/<name>.md` | `~/.agents/custom_agents/<name>/<name>.md` | Platform-agnostic instructions; no frontmatter |
 | Claude shim | `claude/agents/<name>.md` | `~/.claude/agents/<name>.md` | Claude frontmatter + one read instruction |
-| Copilot shim | `copilot/agents/<name>.agent.md` | `~/.github/agents/<name>.agent.md` | Copilot frontmatter + one read instruction |
+| Copilot shim | `copilot/agents/<name>.agent.md` | `~/.copilot/agents/<name>.agent.md` | Copilot frontmatter + one read instruction |
 
-`install.sh` copies each directory tree to its target: `ai/*` → `~/.ai/*`,
-`claude/*` → `~/.claude/*`, `copilot/*` → `~/.github/*`.
+`install.sh` copies each directory tree to its target: `agents/custom_agents/*` → `~/.agents/custom_agents/*`,
+`agents/skills/*` → `~/.agents/skills/*`, `claude/*` → `~/.claude/*`, `copilot/*` → `~/.copilot/*`.
 
 **Shim format** — frontmatter followed by a single instruction pointing at the body:
 
@@ -50,7 +51,7 @@ name: "Agent Name"
 model: claude-sonnet-4-6
 tools: [read, edit]
 ---
-Read and follow the agent instructions at: ~/.ai/agents/<name>.md
+Read and follow the agent instructions at: ~/.agents/custom_agents/<name>/<name>.md
 ```
 
 Shims use `~` (never an expanded absolute path) for cross-OS portability.
@@ -63,7 +64,7 @@ Shims use `~` (never an expanded absolute path) for cross-OS portability.
 ---
 name: "Agent Name"
 description: "Shown in /agents list; also used to match when Claude auto-selects agents"
-model: claude-sonnet-4-6       # optional — pin a specific model; see model-selection-kb skill
+model: claude-sonnet-4-6       # optional — pin a specific model; see claude-model-selection skill
 tools: [read, write, edit, bash, glob, grep, web_search, agent]  # minimum necessary
 disallowedTools: [bash]        # optional — explicitly deny tools
 permissionMode: acceptEdits    # optional — default | acceptEdits | dontAsk | bypassPermissions | plan
@@ -221,4 +222,4 @@ Fetch these only when you need detail on a specific feature. Do not fetch specul
 | Agents / subagents overview and format | https://docs.anthropic.com/en/docs/claude-code/sub-agents |
 | CLAUDE.md, rules, and memory | https://docs.anthropic.com/en/docs/claude-code/memory |
 | Hooks and lifecycle events | https://docs.anthropic.com/en/docs/claude-code/hooks |
-| Model selection, identifiers | Load the `model-selection-kb` skill — it contains the full catalogue and task-based guidance |
+| Model selection, identifiers | Load the `claude-model-selection` skill — it contains the full catalogue and task-based guidance |

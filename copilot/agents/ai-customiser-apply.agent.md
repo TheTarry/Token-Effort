@@ -6,4 +6,4 @@ tools: ["read", "search", "edit"]
 agents: []
 user-invocable: false
 ---
-Read and follow the agent instructions at: ~/.ai/agents/ai-customiser-apply.md
+Read and follow the agent instructions at: ~/.agents/custom_agents/ai-customiser-apply/ai-customiser-apply.md

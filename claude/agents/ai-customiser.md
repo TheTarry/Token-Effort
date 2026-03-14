@@ -4,4 +4,4 @@ description: "Expert agent for creating, reviewing, and editing Claude Code cust
 model: sonnet
 tools: [read, glob, grep, web_search, agent]
 ---
-Read and follow the agent instructions at: ~/.ai/agents/ai-customiser.md
+Read and follow the agent instructions at: ~/.agents/custom_agents/ai-customiser/ai-customiser.md

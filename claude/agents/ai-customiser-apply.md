@@ -4,4 +4,4 @@ description: "Write-phase subagent: implements, creates, and modifies Claude Cod
 model: sonnet
 tools: [read, write, edit]
 ---
-Read and follow the agent instructions at: ~/.ai/agents/ai-customiser-apply.md
+Read and follow the agent instructions at: ~/.agents/custom_agents/ai-customiser-apply/ai-customiser-apply.md
