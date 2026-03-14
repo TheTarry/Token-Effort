@@ -33,10 +33,10 @@ copy_dir() {
 }
 
 # ---------------------------------------------------------------------------
-# install_copilot — copies copilot/* to ~/.github and ai/* to ~/.ai
+# install_copilot — copies copilot/* to ~/.copilot and ai/* to ~/.ai
 # ---------------------------------------------------------------------------
 install_copilot() {
-  local dest="$HOME/.github"
+  local dest="$HOME/.copilot"
   echo -e "\n${CYAN}${BOLD}🐙 Installing GitHub Copilot customisations...${RESET}"
   echo -e "${YELLOW}   Target : $dest${RESET}"
 

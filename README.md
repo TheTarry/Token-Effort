@@ -21,7 +21,7 @@ A collection of AI agents and skills that do just enough to avoid being replaced
 
 ### GitHub Copilot
 
-Files install to `~/.github/`. Agents are available via `@Customiser` in Copilot Chat. Skills load automatically when relevant.
+Files install to `~/.copilot/`. Agents are available via `@Customiser` in Copilot Chat. Skills load automatically when relevant.
 
 ### Claude Code
 
@@ -82,4 +82,4 @@ live in `copilot/skills/` or `claude/skills/` and are copied as-is.
 ## 💻 Windows Note
 
 The install script requires Bash. Run it from WSL or Git Bash.
-Files install to `~/.github/`, `~/.claude/`, and `~/.ai/` (e.g. `C:\Users\<you>\.claude\` on Windows).
+Files install to `~/.copilot/`, `~/.claude/`, and `~/.ai/` (e.g. `C:\Users\<you>\.claude\` on Windows).
