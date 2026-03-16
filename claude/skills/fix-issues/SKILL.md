@@ -9,14 +9,7 @@ Fetch all open GitHub issues labelled `claude`, implement a fix for each one, an
 
 ## Workflow
 
-### 1. Sync main
-
-```bash
-git checkout main
-git pull
-```
-
-### 2. Fetch issues
+### 1. Fetch issues
 
 ```bash
 gh issue list --label "claude" --json number,title,body
@@ -24,29 +17,29 @@ gh issue list --label "claude" --json number,title,body
 
 Parse the JSON into a list of issues. If no issues are returned, report this and stop.
 
-### 3. Process each issue (sequentially)
+### 2. Process each issue (sequentially)
 
-For each issue, follow steps 3a–3f. Work through them in order — do not move on until the current issue is resolved or explicitly skipped.
+For each issue, follow steps 2a–2g. Work through them in order — do not move on until the current issue is resolved or explicitly skipped.
 
-#### 3a. Create a branch
+#### 2a. Set up a branch
 
-```bash
-git checkout -b claude/issue-$NUMBER main
-```
+**REQUIRED SUB-SKILL:** Use git-start-branch
 
-#### 3b. Read and understand the issue
+The issue number is in context, so the branch will be named `feature/<issue-number>` automatically. This also handles syncing main from the previous iteration.
+
+#### 2b. Read and understand the issue
 
 Read the issue `title` and `body` carefully. Explore the codebase as needed to understand what needs to change and where. Produce a clear mental model of the fix before touching any code.
 
-#### 3c. Implement the fix
+#### 2c. Implement the fix
 
 Make the targeted change. Keep it focused — only change what the issue asks for. Avoid unrelated refactors or style cleanups.
 
-#### 3d. Write or update tests
+#### 2d. Write or update tests
 
 Add or update tests to cover the change. Follow the project's existing test conventions (look at nearby test files for patterns).
 
-#### 3e. Run the test suite
+#### 2e. Run the test suite
 
 Detect the appropriate test command for this project. Check in this order:
 
@@ -64,14 +57,14 @@ Run the detected command. If tests fail:
 - Run again
 - If still failing, **skip this issue**: check out main, delete the branch, log the failure, and move on
 
-#### 3f. Commit the changes
+#### 2f. Commit the changes
 
 Stage all modified files and commit with a clear message summarising what changed and why.
 
-#### 3g. Push and open a PR
+#### 2g. Push and open a PR
 
 ```bash
-git push -u origin claude/issue-$NUMBER
+git push -u origin HEAD
 gh pr create \
   --title "<concise title based on issue title>" \
   --body "$(cat <<'EOF'
@@ -88,13 +81,7 @@ EOF
 
 Record the PR URL for the final summary.
 
-#### 3h. Return to main
-
-```bash
-git checkout main
-```
-
-### 4. Final summary
+### 3. Final summary
 
 After processing all issues, report a summary table:
 
