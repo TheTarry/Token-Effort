@@ -29,8 +29,7 @@ claude/
 ├── commands/    →  ~/.claude/commands/
 ├── hooks/       →  ~/.claude/hooks/
 ├── scripts/     →  ~/.claude/scripts/
-├── skills/      →  ~/.claude/skills/
-└── ...
+└── skills/      →  ~/.claude/skills/
 ```
 
 Add something here, run `./install.sh`, it appears in Claude Code. Profound.
