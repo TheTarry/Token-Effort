@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # branch-diff.sh — compute the branch diff relative to its base
 # Exit codes: 0 = success, 1 = base branch not detected (ask user), 2 = unexpected error
-set -euo pipefail
+set -uo pipefail
+trap 'echo "ERROR: unexpected failure at line $LINENO (exit $?)" >&2; exit 2' ERR
 
 # --- Base branch detection ---
 

@@ -4,9 +4,14 @@
 $ErrorActionPreference = 'Stop'
 
 function Invoke-Git {
-    param([string[]]$Args)
-    $output = & git @Args 2>$null
-    return $output
+    param([string[]]$GitArgs)
+    $output = & git @GitArgs 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        $errMsg = $output | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] } | Out-String
+        Write-Error "git $($GitArgs -join ' ') failed: $errMsg"
+        exit 2
+    }
+    return $output | Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] }
 }
 
 # --- Base branch detection ---
