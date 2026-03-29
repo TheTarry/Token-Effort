@@ -1,0 +1,152 @@
+---
+name: running-autoresearch
+description: Use when the user wants to iteratively improve a skill or agent definition through automated evaluation cycles against committed test cases.
+user-invocable: true
+---
+
+# Autoresearch: Iterative Skill/Agent Improvement
+
+## Overview
+
+Applies the Karpathy "autoresearch" pattern to skill and agent definitions. Instead of tweaking ML training code, it mutates `SKILL.md` / agent `.md` files and scores each candidate against committed eval cases. Run for a single cycle (manual) or many cycles (autonomous).
+
+**Usage:** `/running-autoresearch <name>` or `/running-autoresearch agent:<name>`
+
+## Phase 1 — Target
+
+Resolve paths from the user's argument:
+
+| Input | Definition file | Evals directory |
+|-------|----------------|-----------------|
+| `starting-git-branch` | `claude/skills/starting-git-branch/SKILL.md` | `training/skills/starting-git-branch/` |
+| `agent:reviewer-docs` | `claude/agents/reviewer-docs.md` | `training/agents/reviewer-docs/` |
+
+If the definition file is missing, **stop and report the error**. Do not proceed.
+
+## Phase 2 — Eval Setup
+
+- **No `.md` eval files exist** in `training/<type>/<name>/` (excluding `.autoresearch/`): auto-generate 3–5 starter eval cases from the definition. Display them to the user. **Wait for approval/edits before continuing.**
+- **Evals already exist**: load all `.md` files from `training/<type>/<name>/` (excluding `.autoresearch/`). Report count to user.
+
+### Eval file format
+
+Plain markdown, no frontmatter:
+
+```markdown
+## Scenario
+[Input context]
+
+## Expected Behavior
+[What the skill/agent should do]
+
+## Pass Criteria
+- [ ] Criterion 1 (binary yes/no)
+- [ ] Criterion 2
+```
+
+## Phase 3 — Baseline
+
+1. Read the current definition file.
+2. For each eval file, simulate the scenario against the current definition: mark each pass criterion ✓ (pass) or ✗ (fail).
+3. Score = criteria passed / total criteria across all evals.
+4. Write initial state to `training/<type>/<name>/.autoresearch/state.json`:
+   ```json
+   {
+     "iteration": 0,
+     "baseline_score": <score>,
+     "best_score": <score>,
+     "cycles_without_improvement": 0
+   }
+   ```
+5. Copy current definition to `training/<type>/<name>/.autoresearch/best.md`.
+6. Report baseline score to user.
+
+## Phase 4 — Autoresearch Loop
+
+**Each cycle:**
+
+1. Load state from `training/<type>/<name>/.autoresearch/state.json`. **Never trust memory — always read from disk.**
+2. Load all eval files from `training/<type>/<name>/` (excluding `.autoresearch/`).
+3. Read `training/<type>/<name>/.autoresearch/best.md` as the starting point.
+4. Apply one mutation operator to produce a candidate definition (hold in memory — do not write to the live file):
+
+   | Operator | When to use |
+   |----------|-------------|
+   | `add-constraint` | A rule that prevents an observed failure |
+   | `add-example` | A concrete correct-behavior example |
+   | `tighten-language` | Replace ambiguous wording with precise instructions |
+   | `restructure` | Reorder steps/sections for clearer execution |
+   | `add-negative-example` | Explicit "do NOT do X" case |
+   | `remove-bloat` | Trim contradictory or redundant instructions |
+
+   Select the operator based on failure patterns from the previous cycle. On cycle 1, analyse baseline eval results to choose.
+
+5. Evaluate the candidate: for each eval, mark each pass criterion ✓/✗.
+6. Score the candidate: criteria passed / total criteria.
+7. Compare candidate score against `best_score` from `state.json`:
+   - **Score improved**: overwrite `best.md` with candidate, update `best_score`, reset `cycles_without_improvement` to 0. Mark as **kept**.
+   - **Score did not improve**: discard candidate, increment `cycles_without_improvement`. Mark as **reverted**.
+   - **The live definition file is NEVER modified during the loop.**
+8. Append to `training/<type>/<name>/.autoresearch/results.jsonl`:
+   ```
+   {"iteration": N, "score": X.XX, "best_score": X.XX, "operator": "add-constraint", "kept": true/false, "failed_criteria": ["criterion text", ...]}
+   ```
+9. Increment `iteration` in `state.json`.
+10. **Human gate** — pause if any condition is met:
+    - Score has reached 1.0 - i.e. no further improvement to be made against current set of evals
+    - Every 5 cycles completed
+    - 3 consecutive cycles with no improvement (`cycles_without_improvement >= 3`)
+
+    Show summary table:
+    ```
+    | Cycle | Score | Operator       | Kept? |
+    |-------|-------|----------------|-------|
+    | 1     | 0.72  | add-constraint | ✓     |
+    ```
+    Ask: **continue** (run N more cycles), **stop**, or **adjust** (user edits evals or gives guidance).
+
+## Phase 5 — Completion
+
+Report: baseline score → best score, total cycles run, mutations kept vs reverted. Show a diff of `best.md` against the original live definition (which was never modified).
+
+## Phase 6 — Apply (optional)
+
+Ask: "Overwrite `<definition file path>` with the best candidate from this run?"
+
+- **Yes**: write `best.md` → the live definition file.
+- **No**: leave the original intact. Inform the user they can apply it manually.
+
+**Never auto-apply without explicit user approval.**
+
+## State Files
+
+All files are gitignored via `training/.gitignore`:
+
+```
+training/<type>/<name>/.autoresearch/
+├── state.json      ← iteration, best score, cycles-without-improvement
+├── best.md         ← best-scoring candidate seen so far
+└── results.jsonl   ← one entry per cycle
+```
+
+## Common Mistakes
+
+- **Modifying the live definition during the loop** — the loop only ever writes to `.autoresearch/best.md`.
+- **Trusting in-memory state** — always read `state.json` from disk at the start of each cycle.
+- **Evaluating the live definition during the loop** — always evaluate candidates against `best.md`.
+- **Auto-applying the best candidate** — Phase 6 requires explicit user approval.
+- **Skipping the human gate** — pause at every 5 cycles and at 3 consecutive cycles without improvement.
+
+## Eval
+
+- [ ] Resolved definition path and evals directory correctly for both skill and agent inputs
+- [ ] Stopped and reported error when definition file was missing
+- [ ] Auto-generated starter evals and waited for user approval when no evals existed
+- [ ] Wrote `state.json` with correct initial values before starting the loop
+- [ ] Copied the current definition to `best.md` before the first cycle
+- [ ] Read `state.json` from disk at the start of each cycle (not from memory)
+- [ ] Evaluated candidates against `best.md`, not the live definition file
+- [ ] Never wrote to the live definition file during the loop
+- [ ] Appended a JSONL entry to `results.jsonl` after each cycle
+- [ ] Paused at the human gate every 5 cycles or when `cycles_without_improvement >= 3`
+- [ ] Asked for explicit user approval before overwriting the live definition in Phase 6
