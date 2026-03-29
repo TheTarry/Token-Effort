@@ -46,10 +46,11 @@ Plain markdown, no frontmatter:
 
 ## Phase 3 — Baseline
 
-1. Read the current definition file.
-2. For each eval file, simulate the scenario against the current definition: mark each pass criterion ✓ (pass) or ✗ (fail).
-3. Score = criteria passed / total criteria across all evals.
-4. Write initial state to `training/<type>/<name>/.autoresearch/state.json`:
+1. **Clean up any previous run.** If `training/<type>/<name>/.autoresearch/` already exists, delete the entire directory and inform the user: "Removed stale `.autoresearch/` directory from a previous run." This prevents old state, candidates, or results from polluting the new session.
+2. Read the current definition file.
+3. For each eval file, simulate the scenario against the current definition: mark each pass criterion ✓ (pass) or ✗ (fail).
+4. Score = criteria passed / total criteria across all evals.
+5. Write initial state to `training/<type>/<name>/.autoresearch/state.json`:
    ```json
    {
      "iteration": 0,
@@ -58,8 +59,8 @@ Plain markdown, no frontmatter:
      "cycles_without_improvement": 0
    }
    ```
-5. Copy current definition to `training/<type>/<name>/.autoresearch/best.md`.
-6. Report baseline score to user.
+6. Copy current definition to `training/<type>/<name>/.autoresearch/best.md`.
+7. Report baseline score to user.
 
 ## Phase 4 — Autoresearch Loop
 
@@ -131,6 +132,7 @@ training/<type>/<name>/.autoresearch/
 
 ## Common Mistakes
 
+- **Not cleaning up a stale `.autoresearch/` directory** — always delete it at the start of Phase 3 so old state, candidates, and results cannot carry over into the new session.
 - **Modifying the live definition during the loop** — the loop only ever writes to `.autoresearch/best.md`.
 - **Trusting in-memory state** — always read `state.json` from disk at the start of each cycle.
 - **Evaluating the live definition during the loop** — always evaluate candidates against `best.md`.
@@ -139,6 +141,7 @@ training/<type>/<name>/.autoresearch/
 
 ## Eval
 
+- [ ] Deleted stale `.autoresearch/` directory (if present) before writing any new state in Phase 3
 - [ ] Resolved definition path and evals directory correctly for both skill and agent inputs
 - [ ] Stopped and reported error when definition file was missing
 - [ ] Auto-generated starter evals and waited for user approval when no evals existed
