@@ -15,7 +15,7 @@ CLAUDE_SRC="$SCRIPT_DIR/claude"
 CLAUDE_DEST="$HOME/.claude"
 
 # All potential component types — missing source directories are skipped silently
-# (hooks, commands, scripts are not yet used in this repo)
+# (commands, scripts are not yet used in this repo)
 COMPONENTS=(skills agents hooks commands scripts)
 
 COPY=false
@@ -81,6 +81,21 @@ count_files() {
 }
 
 # ---------------------------------------------------------------------------
+# Python detection
+# ---------------------------------------------------------------------------
+# Sets PYTHON_BIN (full path) and PYTHON_CMD (bare name), or both "" if not found.
+# Skips Windows Store stubs that exist on PATH but fail to execute.
+detect_python() {
+  PYTHON_BIN=""
+  PYTHON_CMD=""
+  local _py_candidate _py_path
+  for _py_candidate in python3 python; do
+    _py_path=$(command -v "$_py_candidate" 2>/dev/null) || continue
+    "$_py_path" -c "pass" 2>/dev/null && PYTHON_BIN="$_py_path" && PYTHON_CMD="$_py_candidate" && break
+  done
+}
+
+# ---------------------------------------------------------------------------
 # Uninstall
 # ---------------------------------------------------------------------------
 do_uninstall() {
@@ -97,6 +112,42 @@ do_uninstall() {
       removed=$((removed + 1))
     fi
   done
+
+  # Remove only our hook entry from ~/.claude/settings.json, identified by script filename
+  local settings_file="$CLAUDE_DEST/settings.json"
+  detect_python
+  local python_bin="$PYTHON_BIN"
+  if [[ -f "$settings_file" && -n "$python_bin" ]]; then
+    if $DRY_RUN; then
+      echo -e "  ${DIM}[dry-run]${RESET} would remove PostToolUse hook from ~/.claude/settings.json"
+    else
+      "$python_bin" - "$settings_file" <<'PYEOF'
+import json, sys
+
+settings_path = sys.argv[1]
+with open(settings_path) as f:
+    settings = json.loads(f.read())
+post_use = settings.get("hooks", {}).get("PostToolUse", [])
+
+# Remove hooks referencing suggest-training.py; drop entries whose hooks list becomes empty
+updated = []
+for entry in post_use:
+    remaining = [h for h in entry.get("hooks", []) if "suggest-training.py" not in h.get("command", "")]
+    if remaining:
+        entry["hooks"] = remaining
+        updated.append(entry)
+
+if updated != post_use:
+    settings.setdefault("hooks", {})["PostToolUse"] = updated
+    with open(settings_path, "w") as f:
+        f.write(json.dumps(settings, indent=2))
+
+PYEOF
+      echo -e "  ${RED}✗${RESET} Removed PostToolUse hook from ~/.claude/settings.json"
+      removed=$((removed + 1))
+    fi
+  fi
+
   if [[ $removed -eq 0 ]]; then echo "  Nothing to uninstall."; fi
 }
 
@@ -191,6 +242,49 @@ $DRY_RUN || mkdir -p "$CLAUDE_DEST"
 for component in "${COMPONENTS[@]}"; do
   install_component "$component"
 done
+
+# Register hooks in ~/.claude/settings.json
+# PYTHON_CMD is the bare name (e.g. "python") written into settings.json — avoids hardcoding install paths.
+detect_python
+if [[ -z "$PYTHON_BIN" ]]; then
+  echo -e "  ${YELLOW}⚠${RESET}  Python not found — skipping hook registration in ~/.claude/settings.json"
+else
+  HOOK_COMMAND="$PYTHON_CMD ~/.claude/hooks/suggest-training.py"
+  SETTINGS_FILE="$CLAUDE_DEST/settings.json"
+  if $DRY_RUN; then
+    echo -e "  ${DIM}[dry-run]${RESET} would register PostToolUse hook in ~/.claude/settings.json"
+  else
+    "$PYTHON_BIN" - "$SETTINGS_FILE" "$HOOK_COMMAND" <<'PYEOF'
+import json, os, sys
+
+settings_path, hook_command = sys.argv[1], sys.argv[2]
+if os.path.exists(settings_path):
+    with open(settings_path) as f:
+        settings = json.loads(f.read())
+else:
+    settings = {}
+
+hook = {"type": "command", "command": hook_command}
+hooks_list = settings.setdefault("hooks", {}).setdefault("PostToolUse", [])
+
+# Remove any existing entry for this hook (identified by script filename) so that
+# reinstalling always writes the current command — prevents stale paths persisting.
+updated = []
+for entry in hooks_list:
+    remaining = [h for h in entry.get("hooks", []) if "suggest-training.py" not in h.get("command", "")]
+    if remaining:
+        entry["hooks"] = remaining
+        updated.append(entry)
+hooks_list[:] = updated
+
+hooks_list.append({"matcher": "Edit|Write", "hooks": [hook]})
+with open(settings_path, "w") as f:
+    f.write(json.dumps(settings, indent=2))
+
+PYEOF
+    echo -e "  ${MAGENTA}🤖${RESET} ~/.claude/settings.json  (PostToolUse hook)"
+  fi
+fi
 
 # Collect counts from source
 SKILL_COUNT=$(count_skills)
