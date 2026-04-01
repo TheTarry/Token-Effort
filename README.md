@@ -15,7 +15,7 @@ A collection of Claude Code agents and skills that do just enough to avoid being
 
 2. Run the installer:
 
-   > **Prerequisites:** Bash is required. On Windows, run from WSL or Git Bash.
+   > **Prerequisites:** Bash is required (WSL or Git Bash on Windows). Python 3 is required for hook installation.
 
    ```bash
    ./install.sh --copy
@@ -30,6 +30,7 @@ Everything under `claude/` gets copied to `~/.claude/`. That's it.
 ```
 claude/
 ├── agents/      →  ~/.claude/agents/
+├── hooks/       →  ~/.claude/hooks/  +  entry added to ~/.claude/settings.json
 └── skills/      →  ~/.claude/skills/
 ```
 
