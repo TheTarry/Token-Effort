@@ -6,6 +6,9 @@ Skill auto-generates 3–5 starter eval cases derived from the definition conten
 
 ## Pass Criteria
 - [ ] Generates between 3 and 5 eval cases
+- [ ] Eval filenames are hyphenated
+- [ ] Eval filenames do not start with a number
+- [ ] Eval filenames end with the `*.md` file extension
 - [ ] Each eval case has Scenario, Expected Behavior, and Pass Criteria sections
 - [ ] Displays all generated evals to the user before writing them
 - [ ] Waits for user approval before proceeding — does not auto-continue to Phase 3

@@ -28,6 +28,13 @@ If the definition file is missing, **stop and report the error**. Do not proceed
 - **No `.md` eval files exist** in `training/<type>/<name>/` (excluding `.training-results/`): auto-generate 3–5 starter eval cases from the definition. Display them to the user. **Wait for approval/edits before continuing.**
 - **Evals already exist**: load all `.md` files from `training/<type>/<name>/` (excluding `.training-results/`). Report count to user.
 
+### Eval filename conventions
+
+When writing auto-generated eval files, names must:
+- Use lowercase hyphenated words (e.g., `missing-definition.md`, `score-no-improvement.md`)
+- Not start with a number
+- End with `.md`
+
 ### Eval file format
 
 Plain markdown, no frontmatter:
