@@ -19,13 +19,21 @@ inputs:
     description: "Newline-separated list of Claude Code plugin names to install (e.g., 'code-review@claude-code-plugins\nfeature-dev@claude-code-plugins')"
     required: false
     default: ""
+  allowed_tools:
+    description: "Newline-separated list of Claude Code tools which are allowed to be used during this action (e.g. 'Read\nWrite\nEdit')"
+    required: false
+    default: ""
   claude_code_oauth_token:
     description: Claude Code OAuth token
     required: true
-  claude_args:
-    description: Optional extra Claude Code CLI arguments
+  max_turns:
+    description: "A limit on the number of autonomous tool-use steps (turns) the AI can take during a single, non-interactive session"
     required: false
-    default: "--max-turns 10 --model claude-sonnet-4-6"
+    default: "50"
+  model:
+    description: "The model to use. Accepts either shorthand or fully qualified model name (e.g. 'sonnet' or 'claude-sonnet-4-6')"
+    required: false
+    default: "sonnet"
 
 runs:
   using: composite
@@ -39,12 +47,26 @@ runs:
         repository: TheTarry/Token-Effort
         path: Token-Effort
 
+    - name: 🔧 Build Claude args
+      id: build_args
+      shell: bash
+      env:
+        ALLOWED_TOOLS: ${{ inputs.allowed_tools }}
+        MAX_TURNS: ${{ inputs.max_turns }}
+        MODEL: ${{ inputs.model }}
+      run: |
+        ARGS="--max-turns $MAX_TURNS --model $MODEL"
+        if [ -n "$ALLOWED_TOOLS" ]; then
+          TOOLS=$(echo "$ALLOWED_TOOLS" | tr '\n' ',' | sed 's/,$//')
+          ARGS="$ARGS --allowedTools $TOOLS"
+        fi
+        echo "value=$ARGS" >> "$GITHUB_OUTPUT"
+
     - name: 🤖 Run Claude Skill
       uses: anthropics/claude-code-action@v1
       with:
         claude_code_oauth_token: ${{ inputs.claude_code_oauth_token }}
-        claude_args: ${{ inputs.claude_args }}
         prompt: |
           Read and follow the skill defined in `Token-Effort/claude/skills/${{ inputs.skill_name }}/SKILL.md`.
           ${{ inputs.prompt }}
-        plugins: ${{ inputs.plugins }}
+        claude_args: ${{ steps.build_args.outputs.value }}

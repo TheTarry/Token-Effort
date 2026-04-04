@@ -19,4 +19,10 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           skill_name: triaging-gh-issues
           prompt: "Triage all open issues in this repository."
-          plugins: "github@claude-plugins-official"
+          model: haiku
+          allowed_tools: |
+            mcp__plugin_github_github__list_issues
+            mcp__plugin_github_github__issue_read
+            mcp__plugin_github_github__search_issues
+            mcp__plugin_github_github__issue_write
+            mcp__plugin_github_github__add_issue_comment
