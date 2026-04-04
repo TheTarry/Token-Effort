@@ -19,6 +19,8 @@ jobs:
         with:
           app-id: ${{ vars.PROJECT_MANAGER_APP_ID }}
           private-key: ${{ secrets.PROJECT_MANAGER_PRIVATE_KEY }}
+          # Obtain a token with access to the owner-level resources (i.e. GH projects)
+          owner: ${{ github.repository_owner }}
 
       - name: ✨ Run skill
         uses: TheTarry/Token-Effort/.github/actions/run-skill@main
