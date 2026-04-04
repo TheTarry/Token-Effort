@@ -241,7 +241,7 @@ Triage complete:
 
 ### Phase 6b — Update GitHub project status
 
-For each issue in the approved triage list (action `apply` or `reclassify`) where **confidence > 80%**, attempt to set its GitHub project status to "Brainstorming":
+For **every** classified issue where **confidence > 80%** — regardless of action (`apply`, `reclassify`, or `no-change`) — attempt to set its GitHub project status to "Brainstorming":
 
 1. List all projects for the owner:
 
@@ -280,7 +280,7 @@ For each issue in the approved triage list (action `apply` or `reclassify`) wher
 
 If any `gh project` call fails for an individual issue, skip that issue's project status update and continue — do not abort the batch.
 
-> **Confidence threshold:** Only issues with confidence **strictly greater than 80%** trigger the project status update. Issues with confidence ≤ 80% skip Phase 6b entirely, even if they belong to exactly one project.
+> **Confidence threshold:** Only issues with confidence **strictly greater than 80%** trigger the project status update. Issues with confidence ≤ 80% skip Phase 6b entirely, even if they belong to exactly one project. This applies equally to `apply`, `reclassify`, and `no-change` issues.
 
 ## Common Mistakes
 
@@ -303,6 +303,7 @@ If any `gh project` call fails for an individual issue, skip that issue's projec
 - **Updating project status for low-confidence issues** — `gh project item-edit` must NOT be called for issues with confidence ≤ 80%, even if they belong to exactly one project.
 - **Calling `gh project item-edit` when issue belongs to zero or multiple projects** — skip silently when the issue count is not exactly one.
 - **Reporting an error when "Brainstorming" status is missing** — if the option does not exist in the project, skip silently and continue without an error message.
+- **Skipping the project status update for `no-change` issues** — Phase 6b applies to ALL classified issues with confidence > 80%, not just `apply` and `reclassify`. A `no-change` issue with high confidence (current label is already correct) should still have its project status updated to "Brainstorming".
 
 ## Eval
 
@@ -333,7 +334,7 @@ If any `gh project` call fails for an individual issue, skip that issue's projec
 - [ ] Each `gh issue edit` or `gh issue comment` failure was reported individually without aborting the remaining batch
 - [ ] Final summary reported counts for: labels applied (new), labels updated (reclassified), issues unchanged, and failures
 - [ ] No `mcp__` tool was called at any point
-- [ ] For issues with confidence > 80% belonging to exactly one GitHub project with a "Brainstorming" status option: `gh project list`, `gh project item-list`, `gh project field-list`, and `gh project item-edit` were called
+- [ ] For issues with confidence > 80% belonging to exactly one GitHub project with a "Brainstorming" status option: `gh project list`, `gh project item-list`, `gh project field-list`, and `gh project item-edit` were called — this applies to `apply`, `reclassify`, AND `no-change` issues
 - [ ] `gh project item-edit` was NOT called for issues with confidence ≤ 80%
 - [ ] `gh project item-edit` was NOT called when the issue belonged to zero or more than one GitHub project
 - [ ] When the "Brainstorming" status option was absent from the project, execution continued silently without reporting an error
