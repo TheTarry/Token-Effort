@@ -26,6 +26,10 @@ inputs:
   claude_code_oauth_token:
     description: Claude Code OAuth token
     required: true
+  github_token:
+    description: The token to use to authenticate GitHub interactions that are triggered from within Claude
+    required: false
+    default: ""
   max_turns:
     description: "A limit on the number of autonomous tool-use steps (turns) the AI can take during a single, non-interactive session"
     required: false
@@ -64,8 +68,12 @@ runs:
 
     - name: 🤖 Run Claude Skill
       uses: anthropics/claude-code-action@v1
+      env:
+        # Any `gh` CLI commands issued by the skill will use the provided token
+        GH_TOKEN: ${{ inputs.github_token != '' && inputs.github_token || env.GH_TOKEN }}
       with:
         claude_code_oauth_token: ${{ inputs.claude_code_oauth_token }}
+        github_token: ${{ inputs.github_token }}
         prompt: |
           Read and follow the skill defined in `Token-Effort/claude/skills/${{ inputs.skill_name }}/SKILL.md`.
           ${{ inputs.prompt }}

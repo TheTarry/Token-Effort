@@ -13,10 +13,18 @@ jobs:
       issues: write
       id-token: write
     steps:
+      - name: 🔑 Authenticate as Project Manager
+        id: project-manager-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.PROJECT_MANAGER_APP_ID }}
+          private-key: ${{ secrets.PROJECT_MANAGER_PRIVATE_KEY }}
+
       - name: ✨ Run skill
         uses: TheTarry/Token-Effort/.github/actions/run-skill@main
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ steps.project-manager-token.outputs.token }}
           skill_name: triaging-gh-issues
           prompt: "Triage all open issues in this repository."
           model: haiku
@@ -28,3 +36,7 @@ jobs:
             Bash(gh search issues *)
             Bash(gh issue edit *)
             Bash(gh issue comment *)
+            Bash(gh project list *)
+            Bash(gh project item-list *)
+            Bash(gh project field-list *)
+            Bash(gh project item-edit *)

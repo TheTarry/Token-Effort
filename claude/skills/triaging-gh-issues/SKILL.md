@@ -8,7 +8,7 @@ user-invocable: true
 
 ## Overview
 
-Fetches all open GitHub issues, classifies each one by reading its content and searching for duplicates, then determines whether to apply a new label or correct an existing one. Issues that already have the correct label are skipped silently. Presents a summary of proposed changes and waits for user confirmation before applying any writes (unless running in GitHub Actions, where it applies changes immediately).
+Fetches all open GitHub issues, classifies each one by reading its content and searching for duplicates, then determines whether to apply a new label or correct an existing one. Issues that already have the correct label are skipped silently. Presents a summary of proposed changes and waits for user confirmation before applying any writes (unless running in GitHub Actions, where it applies changes immediately). For each issue, a confidence score is produced reflecting how certain the classification is.
 
 **Usage:** `/triaging-gh-issues`
 
@@ -142,6 +142,23 @@ Only include issues with action `apply` or `reclassify` in the triage list carri
 
 > **Search failure handling:** If `gh search issues` fails for a specific issue, skip the duplicate check for that issue (treat as no duplicate found) and continue. Record it as a search error in the final report.
 
+#### Step 3e — Assign a confidence score
+
+After determining the action, assign a confidence percentage (0–100%) reflecting how certain the label will be correct after the action is applied.
+
+**High confidence (> 80%)** — the signal is unambiguous:
+- A crash report with a full stack trace → `bug` at ~95%
+- A clearly phrased, self-contained feature request → `enhancement` at ~90%
+- A PR that exactly duplicates a known open issue → `duplicate` at ~95%
+- A doc page that is obviously wrong or missing → `documentation` at ~90%
+
+**Low confidence (≤ 80%)** — the issue is ambiguous or could reasonably fit multiple labels:
+- Vague title/body with no specifics (e.g. "Improve the thing") → ~60%
+- Issue that could be `documentation` or `enhancement` with roughly equal evidence → ~70%
+- Classification depends heavily on unstated context → ≤ 75%
+
+Record the confidence value alongside the label and rationale. All issues (including `no-change`) have a confidence score internally, but only `apply` and `reclassify` issues carry it forward to the summary table.
+
 ### Phase 4 — Detect context
 
 Check the environment variable `GITHUB_ACTIONS` using the following expansion-free command:
@@ -157,15 +174,15 @@ printenv GITHUB_ACTIONS
 
 If the triage list contains no issues with action `apply` or `reclassify` (all issues resolved to `no-change`), skip Phase 5 entirely — there is nothing to confirm. Proceed directly to the final report in Phase 6 (which will also be a no-op).
 
-Display a summary table of all issues with action `apply` or `reclassify`:
+Display a summary table of all issues with action `apply` or `reclassify`. Include a `Confidence` column showing the percentage value for each issue:
 
 ```
 ## Triage Summary
 
-| # | Title | Current Label | Proposed Label | Action |
-|---|-------|---------------|----------------|--------|
-| 42 | Short title | (none) | enhancement | apply |
-| 55 | Short title | enhancement | bug | reclassify |
+| # | Title | Current Label | Proposed Label | Action | Confidence |
+|---|-------|---------------|----------------|--------|------------|
+| 42 | Short title | (none) | enhancement | apply | 91% |
+| 55 | Short title | enhancement | bug | reclassify | 65% |
 
 ---
 
@@ -210,7 +227,9 @@ For each issue in the approved triage list (action `apply` or `reclassify`):
 
 If any individual call fails, report the failure for that issue and continue processing the remaining issues — do not abort the batch.
 
-After all calls complete, report:
+After all label writes complete, proceed to Phase 6b.
+
+After Phase 6b completes, report:
 
 ```
 Triage complete:
@@ -219,6 +238,49 @@ Triage complete:
 - N issue(s) unchanged
 - N failure(s)
 ```
+
+### Phase 6b — Update GitHub project status
+
+For each issue in the approved triage list (action `apply` or `reclassify`) where **confidence > 80%**, attempt to set its GitHub project status to "Brainstorming":
+
+1. List all projects for the owner:
+
+   ```bash
+   gh project list --owner $OWNER --format json --limit 100
+   ```
+
+2. For each project returned, check whether the issue appears in it:
+
+   ```bash
+   gh project item-list <project-number> --owner $OWNER --format json --limit 1000
+   ```
+
+   Filter items whose `content.number` matches the issue number. Collect the matching item IDs and project numbers.
+
+3. Count how many projects contain this issue:
+   - **Zero** → skip silently. Do not call `gh project item-edit`.
+   - **More than one** → skip silently. Do not call `gh project item-edit`.
+   - **Exactly one** → continue to step 4.
+
+4. Get the fields for that project to find the Status field and the "Brainstorming" option ID:
+
+   ```bash
+   gh project field-list <project-number> --owner $OWNER --format json
+   ```
+
+   Find the field named `Status` with type `single_select`. Within it, find the option named `Brainstorming`.
+
+   - If no Status field exists, or the Status field has no "Brainstorming" option → skip silently. Do not call `gh project item-edit` and do not report an error.
+
+5. If a "Brainstorming" option was found, update the project item:
+
+   ```bash
+   gh project item-edit --project-id <project-id> --id <item-id> --field-id <status-field-id> --single-select-option-id <brainstorming-option-id>
+   ```
+
+If any `gh project` call fails for an individual issue, skip that issue's project status update and continue — do not abort the batch.
+
+> **Confidence threshold:** Only issues with confidence **strictly greater than 80%** trigger the project status update. Issues with confidence ≤ 80% skip Phase 6b entirely, even if they belong to exactly one project.
 
 ## Common Mistakes
 
@@ -237,6 +299,10 @@ Triage complete:
 - **Using shell expansion syntax to read environment variables** — never use `${VARIABLE}`, `${VARIABLE:-}`, or any `${...}` form in bash commands. Claude Code's sandbox blocks these with a "Contains expansion" error. Always use `printenv VARIABLE` instead.
 - **Prompting for confirmation when there is nothing to confirm** — if all issues resolved to `no-change`, skip Phase 5 entirely. Do not display an empty summary table or ask the user to confirm a list with zero changes.
 - **Using MCP tools for issue operations** — all issue interactions (listing, searching, writing labels, posting comments) must use `gh` CLI commands. Never call `mcp__plugin_github_github__list_issues`, `mcp__plugin_github_github__issue_read`, `mcp__plugin_github_github__search_issues`, `mcp__plugin_github_github__issue_write`, `mcp__plugin_github_github__add_issue_comment`, or any other `mcp__` tool for issue operations.
+- **Omitting the Confidence column from the summary table** — the triage summary table must always include a `Confidence` column showing the % value for each `apply` or `reclassify` issue.
+- **Updating project status for low-confidence issues** — `gh project item-edit` must NOT be called for issues with confidence ≤ 80%, even if they belong to exactly one project.
+- **Calling `gh project item-edit` when issue belongs to zero or multiple projects** — skip silently when the issue count is not exactly one.
+- **Reporting an error when "Brainstorming" status is missing** — if the option does not exist in the project, skip silently and continue without an error message.
 
 ## Eval
 
@@ -250,9 +316,11 @@ Triage complete:
 - [ ] `gh search issues` was called for every open issue using the first 10–12 significant words of the title
 - [ ] `duplicate` label was assigned when a matching issue was found, regardless of other signals
 - [ ] Exactly one label was assigned per issue
+- [ ] A confidence score (0–100%) was assigned to each classified issue
 - [ ] Issues where the current label already matches the classified label were assigned action `no-change` and excluded from the summary and from all writes
 - [ ] Issues where the current label differs but the difference is ambiguous were also assigned action `no-change` and excluded from the summary
 - [ ] Only issues with action `apply` or `reclassify` appeared in the triage summary table
+- [ ] The triage summary table included a `Confidence` column showing the % value for each issue
 - [ ] The `GITHUB_ACTIONS` environment variable was checked before Phase 5
 - [ ] If `GITHUB_ACTIONS` was set and non-empty, Phase 5 was skipped and changes were applied directly
 - [ ] If `GITHUB_ACTIONS` was not set, the summary table was displayed and the user was asked to confirm before any writes occurred
@@ -265,3 +333,7 @@ Triage complete:
 - [ ] Each `gh issue edit` or `gh issue comment` failure was reported individually without aborting the remaining batch
 - [ ] Final summary reported counts for: labels applied (new), labels updated (reclassified), issues unchanged, and failures
 - [ ] No `mcp__` tool was called at any point
+- [ ] For issues with confidence > 80% belonging to exactly one GitHub project with a "Brainstorming" status option: `gh project list`, `gh project item-list`, `gh project field-list`, and `gh project item-edit` were called
+- [ ] `gh project item-edit` was NOT called for issues with confidence ≤ 80%
+- [ ] `gh project item-edit` was NOT called when the issue belonged to zero or more than one GitHub project
+- [ ] When the "Brainstorming" status option was absent from the project, execution continued silently without reporting an error
