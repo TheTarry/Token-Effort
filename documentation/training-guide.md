@@ -13,7 +13,7 @@ Run training after:
 - Adding new eval cases that expose a gap in the current definition
 - Noticing consistent failure modes in real use
 
-If you edit a skill or agent file while Claude Code is active, the `suggest-training` PostToolUse hook (`claude/hooks/suggest-training.py`) will automatically prompt you to run training for the definition you just changed. You can accept or decline.
+If you edit a skill or agent file while Claude Code is active, the `suggest-training` PostToolUse hook (`plugins/token-effort/hooks/suggest-training.py`) will automatically prompt you to run training for the definition you just changed. You can accept or decline.
 
 ## Invoking Training
 
@@ -41,7 +41,7 @@ At a high level, training runs through these stages:
 5. **Summarise** the run and show a diff of what changed.
 6. **Optionally apply** the best candidate back to the live definition — always with your explicit approval.
 
-The live definition file is never modified during the loop. For full implementation detail, see [`claude/skills/run-training/SKILL.md`](../claude/skills/run-training/SKILL.md).
+The live definition file is never modified during the loop. For full implementation detail, see [`.claude/skills/run-training/SKILL.md`](../.claude/skills/run-training/SKILL.md).
 
 ## Eval Files
 
