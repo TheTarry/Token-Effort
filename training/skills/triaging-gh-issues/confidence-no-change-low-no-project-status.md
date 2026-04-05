@@ -2,7 +2,7 @@
 
 GHA context (`GITHUB_ACTIONS=true`, `GITHUB_REPOSITORY=HeadlessTarry/Token-Effort`). One open issue (#95) is already labelled `enhancement`. Its title is "Improve the thing" and its body is vague — could be a feature request or documentation update. The classification is `enhancement` (matching current label), action `no-change`, but confidence is ≤ 80% due to ambiguity.
 
-The issue belongs to exactly one GitHub project with a "Brainstorming" status option.
+The issue belongs to exactly one GitHub project whose Status field has options: "New", "Brainstorming", "Building", "Done". The issue's current status in the project is "New".
 
 ## Expected Behaviour
 

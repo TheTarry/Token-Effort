@@ -241,7 +241,7 @@ Triage complete:
 
 ### Phase 6b — Update GitHub project status
 
-For **every** classified issue where **confidence > 80%** — regardless of action (`apply`, `reclassify`, or `no-change`) — attempt to set its GitHub project status to "Brainstorming":
+For **every** classified issue where **confidence > 80%** — regardless of action (`apply`, `reclassify`, or `no-change`) — advance its GitHub project status one column to the right:
 
 1. List all projects for the owner:
 
@@ -255,27 +255,31 @@ For **every** classified issue where **confidence > 80%** — regardless of acti
    gh project item-list <project-number> --owner $OWNER --format json --limit 1000
    ```
 
-   Filter items whose `content.number` matches the issue number. Collect the matching item IDs and project numbers.
+   Filter items whose `content.number` matches the issue number. Collect the matching item IDs, project numbers, **and the item's current `status` name**.
 
 3. Count how many projects contain this issue:
    - **Zero** → skip silently. Do not call `gh project item-edit`.
    - **More than one** → skip silently. Do not call `gh project item-edit`.
    - **Exactly one** → continue to step 4.
 
-4. Get the fields for that project to find the Status field and the "Brainstorming" option ID:
+4. Get the fields for that project to determine the next status option:
 
    ```bash
    gh project field-list <project-number> --owner $OWNER --format json
    ```
 
-   Find the field named `Status` with type `single_select`. Within it, find the option named `Brainstorming`.
+   Find the field named `Status` with type `single_select`. Its `options` array is in board-display order (left to right).
 
-   - If no Status field exists, or the Status field has no "Brainstorming" option → skip silently. Do not call `gh project item-edit` and do not report an error.
+   - If no Status field exists → skip silently. Do not call `gh project item-edit`.
+   - If the issue's current status (from step 2) is null/empty → skip silently. Do not call `gh project item-edit`.
+   - Find the index of the current status name in the `options` array. If not found → skip silently.
+   - If the current status is the **last** option (no next column exists) → skip silently. Do not call `gh project item-edit`.
+   - Otherwise, the target option is `options[current_index + 1]`.
 
-5. If a "Brainstorming" option was found, update the project item:
+5. Update the project item to the next status option:
 
    ```bash
-   gh project item-edit --project-id <project-id> --id <item-id> --field-id <status-field-id> --single-select-option-id <brainstorming-option-id>
+   gh project item-edit --project-id <project-id> --id <item-id> --field-id <status-field-id> --single-select-option-id <next-option-id>
    ```
 
 If any `gh project` call fails for an individual issue, skip that issue's project status update and continue — do not abort the batch.
@@ -302,8 +306,10 @@ If any `gh project` call fails for an individual issue, skip that issue's projec
 - **Omitting the Confidence column from the summary table** — the triage summary table must always include a `Confidence` column showing the % value for each `apply` or `reclassify` issue.
 - **Updating project status for low-confidence issues** — `gh project item-edit` must NOT be called for issues with confidence ≤ 80%, even if they belong to exactly one project.
 - **Calling `gh project item-edit` when issue belongs to zero or multiple projects** — skip silently when the issue count is not exactly one.
-- **Reporting an error when "Brainstorming" status is missing** — if the option does not exist in the project, skip silently and continue without an error message.
-- **Skipping the project status update for `no-change` issues** — Phase 6b applies to ALL classified issues with confidence > 80%, not just `apply` and `reclassify`. A `no-change` issue with high confidence (current label is already correct) should still have its project status updated to "Brainstorming".
+- **Skipping the project status update for `no-change` issues** — Phase 6b applies to ALL classified issues with confidence > 80%, not just `apply` and `reclassify`. A `no-change` issue with high confidence should still have its project status advanced.
+- **Calling `gh project item-edit` when the issue has no current status set** — if the item's `status` field is null/empty, skip silently. Do not call `gh project item-edit`.
+- **Calling `gh project item-edit` when the issue is already at the last column** — if the current status is the last option in the `options` array, there is no next column. Skip silently.
+- **Setting a hardcoded target status name** — do not look for a specific option by name. Always determine the target by finding the current status index and advancing to `options[index + 1]`.
 
 ## Eval
 
@@ -334,7 +340,9 @@ If any `gh project` call fails for an individual issue, skip that issue's projec
 - [ ] Each `gh issue edit` or `gh issue comment` failure was reported individually without aborting the remaining batch
 - [ ] Final summary reported counts for: labels applied (new), labels updated (reclassified), issues unchanged, and failures
 - [ ] No `mcp__` tool was called at any point
-- [ ] For issues with confidence > 80% belonging to exactly one GitHub project with a "Brainstorming" status option: `gh project list`, `gh project item-list`, `gh project field-list`, and `gh project item-edit` were called — this applies to `apply`, `reclassify`, AND `no-change` issues
+- [ ] For issues with confidence > 80% belonging to exactly one GitHub project whose current status is not the last column: `gh project list`, `gh project item-list`, `gh project field-list`, and `gh project item-edit` were called — this applies to `apply`, `reclassify`, AND `no-change` issues
 - [ ] `gh project item-edit` was NOT called for issues with confidence ≤ 80%
 - [ ] `gh project item-edit` was NOT called when the issue belonged to zero or more than one GitHub project
-- [ ] When the "Brainstorming" status option was absent from the project, execution continued silently without reporting an error
+- [ ] `gh project item-edit` was NOT called when the issue had no current status set in the project
+- [ ] `gh project item-edit` was NOT called when the issue's current status was the last option in the Status field
+- [ ] The target status was determined by advancing one position in the ordered `options` array — not by searching for a hardcoded name
