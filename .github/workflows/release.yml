@@ -13,12 +13,13 @@ permissions:
 
 jobs:
   release:
+    name: 📦 Create Release
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       VERSION: ${{ inputs.version }}
     steps:
-      - name: Validate SemVer format
+      - name: 🔍 Validate SemVer format
         run: |
           if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "Error: '$VERSION' is not a valid SemVer string (expected X.Y.Z)"
@@ -30,13 +31,13 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Patch plugin.json version
+      - name: 📝 Patch plugin.json version
         run: |
           jq --arg version "$VERSION" '.version = $version' \
             plugins/token-effort/.claude-plugin/plugin.json > plugin.json.tmp
           mv plugin.json.tmp plugins/token-effort/.claude-plugin/plugin.json
 
-      - name: Commit and push version bump
+      - name: 📝 Commit and push version bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -44,19 +45,19 @@ jobs:
           git commit -m "chore: release v$VERSION"
           git push origin HEAD
 
-      - name: Check tag does not exist
+      - name: 🔍 Check tag does not exist
         run: |
           if git ls-remote --tags origin "refs/tags/v$VERSION" | grep -q .; then
             echo "Tag v$VERSION already exists. Aborting."
             exit 1
           fi
 
-      - name: Create git tag
+      - name: 🏷️ Create git tag
         run: |
           git tag "v$VERSION"
           git push origin "v$VERSION"
 
-      - name: Create GitHub release
+      - name: 📦 Create GitHub release
         run: |
           gh release create "v$VERSION" \
             --generate-notes \
