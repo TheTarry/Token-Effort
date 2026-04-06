@@ -7,7 +7,7 @@ A collection of Claude Code agents and skills that do just enough to avoid being
 ## 🚀 Getting Started
 
 ```bash
-claude plugin marketplace add TheTarry/Token-Effort
+claude plugin marketplace add HeadlessTarry/Token-Effort
 claude plugin install token-effort@token-effort
 ```
 

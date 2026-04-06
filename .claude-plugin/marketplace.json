@@ -1,6 +1,6 @@
 {
   "name": "token-effort",
-  "owner": { "name": "TheTarry" },
+  "owner": { "name": "HeadlessTarry" },
   "metadata": { "description": "Low-stakes intelligence for high-latency humans" },
   "plugins": [
     {
