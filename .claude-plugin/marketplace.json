@@ -1,0 +1,12 @@
+{
+  "name": "token-effort",
+  "owner": { "name": "HeadlessTarry" },
+  "metadata": { "description": "Low-stakes intelligence for high-latency humans" },
+  "plugins": [
+    {
+      "name": "token-effort",
+      "source": "./plugins/token-effort",
+      "description": "Agents, skills, and hooks for Claude Code"
+    }
+  ]
+}

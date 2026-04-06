@@ -18,8 +18,8 @@ Resolve paths from the user's argument:
 
 | Input | Definition file | Evals directory |
 |-------|----------------|-----------------|
-| `starting-git-branch` | `claude/skills/starting-git-branch/SKILL.md` | `training/skills/starting-git-branch/` |
-| `agent:reviewer-docs` | `claude/agents/reviewer-docs.md` | `training/agents/reviewer-docs/` |
+| `starting-git-branch` | `plugins/token-effort/skills/starting-git-branch/SKILL.md` | `training/skills/starting-git-branch/` |
+| `agent:reviewer-docs` | `plugins/token-effort/agents/reviewer-docs.md` | `training/agents/reviewer-docs/` |
 
 If the definition file is missing, **stop and report the error**. Do not proceed.
 

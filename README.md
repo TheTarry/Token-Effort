@@ -6,43 +6,29 @@ A collection of Claude Code agents and skills that do just enough to avoid being
 
 ## 🚀 Getting Started
 
-1. Clone the repo:
+```bash
+claude plugin marketplace add HeadlessTarry/Token-Effort
+claude plugin install token-effort@token-effort
+```
 
-   ```bash
-   git clone https://github.com/HeadlessTarry/Token-Effort.git
-   cd Token-Effort
-   ```
-
-2. Run the installer:
-
-   > **Prerequisites:** Bash is required (WSL or Git Bash on Windows). Python 3 is required for hook installation.
-
-   ```bash
-   ./install.sh --copy
-   ```
-
-   Other options: `--force` removes existing files first, `--uninstall` removes installed files, `--dry-run` previews changes without applying them (no other flag needed).
-
-Everything under `claude/` gets copied to `~/.claude/`. That's it.
+Skills become `/token-effort:triaging-gh-issues`, `/token-effort:computing-branch-diff`, etc.
 
 ## 🏗️ Structure
 
 ```
-claude/
-├── agents/      →  ~/.claude/agents/
-├── hooks/       →  ~/.claude/hooks/  +  entry added to ~/.claude/settings.json
-└── skills/      →  ~/.claude/skills/
+plugins/token-effort/
+├── agents/      →  agent definitions
+├── skills/      →  skill definitions
+└── hooks/       →  hooks + hook declarations
+
+.claude/skills/run-training/   →  local skill (training evals live in this repo)
 
 training/
-└── <type>/<name>/   →  eval cases for the /run-training skill (committed to git)
+└── <type>/<name>/   →  eval cases for the /run-training skill
 
 documentation/
-└── *.md             →  guides and reference docs for this repo
+└── *.md             →  guides and reference docs
 ```
-
-Add something `claude/*`, run `./install.sh`, it appears in Claude Code. Profound.
-
-Other supported types (`commands/`, `hooks/`, `scripts/`) can be added — the installer handles them automatically when the directory exists.
 
 ## 🧪 Training
 
@@ -50,12 +36,10 @@ Skills and agents in this repo can be iteratively improved using the `/run-train
 
 See [documentation/training-guide.md](documentation/training-guide.md) for the full guide.
 
+## 🏷️ Releases
+
+New versions are published via the [release workflow](.github/workflows/release.yml). Trigger it manually in GitHub Actions with a SemVer version string — it patches `plugin.json`, tags the commit, and creates a GitHub release.
+
 ## ➕ Adding Things
 
-Drop files under `claude/` mirroring where they should land in `~/.claude/`. Re-run `./install.sh` to deploy.
-
-Agents go in `claude/agents/<name>.md`. Skills go in `claude/skills/<name>/SKILL.md`. See existing entries for reference.
-
-## 💻 Windows Note
-
-Requires Bash. Run from WSL or Git Bash. `~` resolves to `C:\Users\<you>\`, so files install to `C:\Users\<you>\.claude\`.
+Agents go in `plugins/token-effort/agents/<name>.md`. Skills go in `plugins/token-effort/skills/<name>/SKILL.md`. See existing entries for reference.

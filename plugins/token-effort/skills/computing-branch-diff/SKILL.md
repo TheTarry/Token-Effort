@@ -9,7 +9,7 @@ description: Use when a subagent needs to know what changed on the current branc
 
 Produces the merge-base, full diff, changed file list, and commit list for the current branch relative to its base. Delegates all logic to a script — one Bash call, no approval chain. Handles base-branch detection, upstream fallback, `LARGE_DIFF_FILE` offloading, and `STATUS=empty` for branches with no unique commits.
 
-This skill ships with two companion scripts — `branch-diff.sh` (Bash) and `branch-diff.ps1` (PowerShell) — which must be present in the same installed directory. They are installed automatically by the Token-Effort install script.
+This skill ships with two companion scripts — `branch-diff.sh` (Bash) and `branch-diff.ps1` (PowerShell) — which must be present in the same installed directory.
 
 ## When NOT to Use
 
@@ -24,11 +24,11 @@ This skill ships with two companion scripts — `branch-diff.sh` (Bash) and `bra
 The scripts live alongside this file. Resolve the directory:
 
 ```bash
-# Use the known install path (reliable in agent eval contexts):
-SKILL_DIR="$HOME/.claude/skills/computing-branch-diff"
+# Use the plugin root (substituted by Claude Code at runtime):
+SKILL_DIR="${CLAUDE_PLUGIN_ROOT}/skills/computing-branch-diff"
 
 if [ ! -d "$SKILL_DIR" ]; then
-  echo "ERROR: skill scripts not found at $SKILL_DIR. Run the Token-Effort install script first." >&2
+  echo "ERROR: skill scripts not found at $SKILL_DIR." >&2
   exit 2
 fi
 ```
@@ -89,7 +89,7 @@ When `LARGE_DIFF_FILE=...` appears, report the path — do not inline the diff.
 | Mistake | Fix |
 |---------|-----|
 | Running on the default branch itself | `STATUS=empty` is expected — report "no unique commits" and stop; do not treat it as an error |
-| Using `$0` to resolve `SKILL_DIR` inside a subagent | `$0` is unreliable in eval contexts; use the known install path (`$HOME/.claude/skills/computing-branch-diff`) |
+| Using `$0` to resolve `SKILL_DIR` inside a subagent | `$0` is unreliable in eval contexts; use `${CLAUDE_PLUGIN_ROOT}/skills/computing-branch-diff` |
 | Inlining the diff when `LARGE_DIFF_FILE` is set | Report the file path only; inlining can exceed context limits |
 
 ## Eval
