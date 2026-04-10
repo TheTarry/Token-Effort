@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python plugins/token-effort/hooks/compound_bash_allow.py"
+            "command": "python ${CLAUDE_PLUGIN_ROOT}/hooks/compound_bash_allow.py"
           }
         ]
       }
