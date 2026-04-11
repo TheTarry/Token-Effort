@@ -94,7 +94,7 @@ Store as `$OWNER` and `$REPO`. If the command fails or the URL cannot be parsed,
 
 After scanning all projects, you have a list of matching projects (zero, one, or many).
 
-**In explicit mode:** if the list is empty (issue belongs to no project), report an error and stop. Do not call `gh project item-edit`.
+**In explicit mode:** if the list is empty (issue belongs to no project), report the error: "Issue #N is not on any GitHub project board." and stop. Do not call `gh project item-edit`.
 
 **In advance mode:** apply the following silent-skip preconditions in order — stop and skip silently (no error, no output) if any condition is met:
 - Issue belongs to zero projects
