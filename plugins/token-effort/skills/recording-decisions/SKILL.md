@@ -112,8 +112,10 @@ After all fields are confirmed:
 ls docs/decisions/ 2>/dev/null
 ```
 
-2. If ADR files exist, identify potentially related ones by keyword overlap between
-   existing slugs and the current issue title / spec content. Present a shortlist:
+2. If ADR files exist, list ALL existing ADRs and present them for the user to
+   review. Use keyword overlap between existing slugs and the current issue title /
+   spec content to rank or highlight potentially related ones — but never filter
+   them out. Present the full list:
 
 ```
 I found these existing ADRs — do any get superseded by this decision?
