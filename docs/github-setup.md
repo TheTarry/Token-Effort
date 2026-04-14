@@ -17,7 +17,7 @@ Use this checklist to see what you still need to set up. Each item links to the 
 - [ ] [Issue labels](#4-issue-labels): `enhancement`, `bug`, `documentation`, `duplicate`, `pending-review`
 - [ ] [Repository secret](#5-repository-secrets--variables): `PROJECT_MANAGER_PRIVATE_KEY`
 - [ ] [Repository secret](#5-repository-secrets--variables): `CLAUDE_CODE_OAUTH_TOKEN`
-- [ ] [Repository variable](#5-repository-secrets--variables): `PROJECT_MANAGER_APP_ID`
+- [ ] [Repository variable](#5-repository-secrets--variables): `PROJECT_MANAGER_CLIENT_ID`
 - [ ] [Triage workflow](#6-triage-workflow) added to `.github/workflows/`
 
 ---
@@ -108,7 +108,7 @@ The triage workflow uses one repository variable and two secrets. Add them under
 
 | Variable | Value |
 |----------|-------|
-| `PROJECT_MANAGER_APP_ID` | The **Client ID** from the GitHub App General settings page (step 2.6 above — the `Iv1.` prefixed string, not the numeric App ID) |
+| `PROJECT_MANAGER_CLIENT_ID` | The **Client ID** from the GitHub App General settings page (step 2.6 above — the `Iv1.` prefixed string, not the numeric App ID) |
 
 ### Secrets (Secrets tab)
 
@@ -117,7 +117,7 @@ The triage workflow uses one repository variable and two secrets. Add them under
 | `PROJECT_MANAGER_PRIVATE_KEY` | Full contents of the `.pem` file downloaded in step 2.7 above |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Your Claude Code OAuth token — generated during Claude Code setup. Run `claude auth status` to surface the token, or see the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) for your version. |
 
-> **On a personal account?** Replace the `PROJECT_MANAGER_APP_ID` variable and `PROJECT_MANAGER_PRIVATE_KEY` secret with a single `GITHUB_PAT` secret — see [Personal Account Alternative](#personal-account-alternative).
+> **On a personal account?** Replace the `PROJECT_MANAGER_CLIENT_ID` variable and `PROJECT_MANAGER_PRIVATE_KEY` secret with a single `GITHUB_PAT` secret — see [Personal Account Alternative](#personal-account-alternative).
 
 ---
 
@@ -162,7 +162,7 @@ GitHub Apps require organisation-level permissions to access GitHub Projects. Pe
            id: project-manager-token
            uses: actions/create-github-app-token@v3
            with:
-             client-id: ${{ vars.PROJECT_MANAGER_APP_ID }}
+             client-id: ${{ vars.PROJECT_MANAGER_CLIENT_ID }}
              private-key: ${{ secrets.PROJECT_MANAGER_PRIVATE_KEY }}
              owner: ${{ github.repository_owner }}
    ```
