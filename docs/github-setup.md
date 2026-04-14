@@ -1,6 +1,6 @@
 # ⚙️ GitHub Setup Guide
 
-This guide covers the GitHub infrastructure required to run the Token-Effort automated issue triage workflow. It does **not** cover Claude Code configuration, plugin installation, or the release pipeline — only the GitHub-side setup needed to get triage running.
+This guide covers the GitHub infrastructure required to use the Token-Effort skills and agents. The full workflow — triaging issues, brainstorming specs, building features, and cutting releases — depends on this foundation. It does **not** cover Claude Code configuration, plugin installation, or the release pipeline — only the GitHub-side setup.
 
 **Audience:** Project maintainers, contributors, and external users who install the Token-Effort plugin and want to use its skills on their own GitHub repositories.
 
