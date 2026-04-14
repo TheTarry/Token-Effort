@@ -24,7 +24,7 @@ Use this checklist to see what you still need to set up. Each item links to the 
 
 ## 🏢 1. GitHub Organisation
 
-A GitHub organisation is required because GitHub Apps cannot be granted access to Projects under a personal account — this is a platform limitation. If you cannot create an organisation, see [Personal Account Alternative](#personal-account-alternative) instead.
+A GitHub organisation is required because GitHub Apps cannot be granted access to Projects under a personal account — this is a platform limitation.
 
 > **On a personal account?** Skip this section and see [Personal Account Alternative](#personal-account-alternative) instead.
 
