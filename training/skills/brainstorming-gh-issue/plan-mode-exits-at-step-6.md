@@ -15,7 +15,7 @@ The user runs `/brainstorming-gh-issue 28` while the session is already in plan 
 
 - [ ] The Phase 3 handoff contains an explicit instruction to call `ExitPlanMode` at step 6 (not before).
 - [ ] The Phase 3 handoff instructs brainstorming to write to `docs/superpowers/specs/`, not to the plan file location.
-- [ ] Plan mode is not exited during steps 1–5 (the interactive loop).
+- [ ] `ExitPlanMode` does not appear in the tool call log before step 6 is reached (i.e. the spec file write has not yet occurred).
 - [ ] `ExitPlanMode` is called at step 6, before the spec file is written.
 - [ ] The spec file appears in `docs/superpowers/specs/` (not in `~/.claude/plans/`).
 - [ ] Plan mode is not re-entered after step 6.

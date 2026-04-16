@@ -15,6 +15,5 @@ The user runs `/brainstorming-gh-issue 28`. Brainstorming completes and writes a
 - [ ] The Phase 3 handoff contains an explicit instruction not to commit the spec file.
 - [ ] No `git commit` is made by brainstorming for the spec file.
 - [ ] Phase 4 locates the spec file with `ls -t docs/superpowers/specs/*.md | head -1`.
-- [ ] Phase 4 removes the spec file with plain `rm`, not `git rm`.
 - [ ] No cleanup commit is made after posting the spec to GitHub.
 - [ ] No `git add` or `git commit` commands are run at any point by the skill or brainstorming.

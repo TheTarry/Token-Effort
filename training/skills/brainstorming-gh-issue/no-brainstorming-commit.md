@@ -17,5 +17,4 @@ Brainstorming reaches step 6 after the user approves the design for issue #28. B
 - [ ] No `git add` is run by brainstorming at step 6 or after.
 - [ ] No `git commit` is run by brainstorming at step 6 or after.
 - [ ] The spec file is present in `docs/superpowers/specs/` but untracked (`git status` shows it as untracked, not staged or committed).
-- [ ] Phase 4 removes the spec file with plain `rm`, not `git rm`.
 - [ ] No commit is made in Phase 4 for the spec file removal.

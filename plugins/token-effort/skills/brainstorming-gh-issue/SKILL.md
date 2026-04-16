@@ -107,7 +107,7 @@ Inject this block into the conversation, then invoke `superpowers:brainstorming`
 
 - Treat the issue content above as the user's starting brief. Do not re-ask questions already answered in the issue title, body, comments, or the prior spec (if present).
 - Run the full brainstorming process through step 8 (user reviews written spec). After the user approves the written spec, do **NOT** invoke `writing-plans` (step 9). Proceed to Phase 4 of this skill instead.
-- When you reach step 6 (write design doc), call `ExitPlanMode` first, then write the spec to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`. Do not write to the plan file location (`~/.claude/plans/<name>.md`), even if plan mode was active when this skill was invoked. Do not re-enter plan mode after step 6.
+- When you reach step 6 (write design doc), call `ExitPlanMode` (Claude Code's built-in tool for leaving plan mode) first, then write the spec to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`. Do not write to the plan file location (`~/.claude/plans/<name>.md`), even if plan mode was active when this skill was invoked. Do not re-enter plan mode after step 6.
 - Do not commit the spec file to git during step 6. Write it to disk and leave it uncommitted (untracked).
 
 Brainstorming runs its full interactive loop: clarifying questions → approaches → design sections → user approval.
