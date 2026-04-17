@@ -1,6 +1,6 @@
 ---
 name: recording-decisions
-description: Use when committing an Architecture Decision Record (ADR) to docs/decisions/ — guides through Context, Decision, and Consequences fields with supersession support. Called from /build Phase 9 with spec context pre-populated; can also be run standalone.
+description: Use when committing an Architecture Decision Record (ADR) to docs/decisions/ — guides through Context, Decision, and Consequences fields with supersession support. Called from /token-effort:building-gh-issue Phase 8 with spec context pre-populated; can also be run standalone.
 user-invocable: true
 ---
 
@@ -17,7 +17,7 @@ spec in context. When called standalone, prompts all fields interactively.
 ## When to Use
 
 **Use when:**
-- Phase 9 of `/token-effort:build` calls this skill after code review
+- Phase 8 of `/token-effort:building-gh-issue` calls this skill after code review
 - You want to capture an architectural decision as an in-repo record
 
 **Do not use when:**

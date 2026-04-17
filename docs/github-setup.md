@@ -12,7 +12,7 @@ Use this checklist to see what you still need to set up. Each item links to the 
 
 - [ ] [GitHub organisation](#1-github-organisation) (or personal account — see [Personal Account Alternative](#personal-account-alternative))
 - [ ] ["Project Manager" GitHub App](#2-project-manager-github-app) created and installed on the repository
-- [ ] [GitHub Project board](#3-github-project-board) with Status field: `New` → `Brainstorming` → `Building` → `Done`
+- [ ] [GitHub Project board](#3-github-project-board) with Status field: `New` → `Brainstorming` → `Planning` → `Building` → `Done`
 - [ ] [Project board linked to the repository](#3-github-project-board) (Settings → Linked repositories)
 - [ ] [Issue labels](#4-issue-labels): `enhancement`, `bug`, `documentation`, `duplicate`, `pending-review`
 - [ ] [Repository secret](#5-repository-secrets--variables): `PROJECT_MANAGER_PRIVATE_KEY`
@@ -71,10 +71,13 @@ The project board tracks issue status through the workflow lifecycle. The triage
 4. Add a single-select field named exactly **`Status`** with options in this exact order:
    - `New`
    - `Brainstorming`
+   - `Planning`
    - `Building`
    - `Done`
 
 > **Important:** The field must be named exactly `Status` (case-sensitive). The `move-issue-status` skill searches for this field by name.
+
+> **Planning column:** Issues move here when `token-effort:planning-gh-issue` is invoked to write and review an implementation plan. The `pending-review` label is applied once the plan is posted, and the issue advances to `Building` after the plan is approved.
 
 ---
 
