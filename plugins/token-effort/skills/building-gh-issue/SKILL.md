@@ -1,0 +1,182 @@
+---
+name: building-gh-issue
+description: Use when implementing a GitHub issue end-to-end — from approved design spec and implementation plan to merged PR.
+user-invocable: true
+---
+
+# 🏗️ Build a GitHub Issue
+
+## 🌐 Overview
+
+Implements a GitHub issue end-to-end: fetches the issue, its approved design spec, and its approved implementation plan, moves the issue to "Building" status, executes the plan, verifies and reviews the result, and opens a pull request. The pull request is created exactly once, at the final phase.
+
+**Usage:** `/token-effort:building-gh-issue <issue-number>`
+
+Strip any leading `#` from the issue number before use (e.g. `#42` → `42`).
+
+## ⚙️ When to Use
+
+**Use when:**
+- A GitHub issue has both an approved design spec comment (produced by `token-effort:brainstorming-gh-issue`) and an approved implementation plan comment (produced by `token-effort:planning-gh-issue`) and is ready to be implemented
+- You want a structured, end-to-end build workflow from plan to merged PR
+
+**Do not use when:**
+- The issue does not yet have a design spec comment — run `/token-effort:brainstorming-gh-issue <N>` first and get the spec approved
+- The issue does not yet have an implementation plan comment — run `/token-effort:planning-gh-issue <N>` first and get the plan approved
+- Implementation is already underway on a branch — join that branch directly instead
+
+## Prerequisites
+
+- `gh` CLI must be authenticated and available in the session. All GitHub operations use `gh` commands via `Bash`. No MCP tools are used or required.
+- The issue must have a design spec comment whose body begins with `<!-- brainstorming-gh-issue:spec -->`, produced by `token-effort:brainstorming-gh-issue`.
+- The issue must have an implementation plan comment whose body begins with `<!-- token-effort:planning-gh-issue -->`, produced by `token-effort:planning-gh-issue`.
+- The following `superpowers` skills must be installed:
+  - `superpowers:executing-plans`
+  - `superpowers:subagent-driven-development`
+  - `superpowers:finishing-a-development-branch`
+
+> **Important:** Do **not** use MCP tools (`mcp__plugin_github_github__*`) for any issue or GitHub operation.
+
+## Process
+
+### Phase 1 — Fetch issue, extract spec and plan
+
+Run:
+
+```bash
+gh issue view <N> --json number,title,body,comments,labels
+```
+
+**Extract spec:** Search the `comments` array for a comment whose body starts with `<!-- brainstorming-gh-issue:spec -->`.
+
+**If no spec comment is found:** Stop immediately with the error:
+
+> "Issue #N does not have a design spec comment. Run `/token-effort:brainstorming-gh-issue <N>` to generate one, then get it approved before building."
+
+**If found:** Extract the spec body — the full comment content **after** stripping the `<!-- brainstorming-gh-issue:spec -->` marker line.
+
+**Extract plan:** Search the `comments` array for a comment whose body starts with `<!-- token-effort:planning-gh-issue -->`.
+
+**If no plan comment is found:** Stop immediately with the error:
+
+> "Issue #N does not have an implementation plan comment. Run `/token-effort:planning-gh-issue <N>` to generate one, then get it approved before building."
+
+**If found:** Extract the plan body — the full comment content **after** stripping the `<!-- token-effort:planning-gh-issue -->` marker line. This is the plan used for execution in Phase 3.
+
+### Phase 2 — Move issue to Building status
+
+Invoke: `token-effort:move-issue-status <N> "Building"`
+
+If this fails for any reason (e.g. the issue is not on a project board, or the skill is unavailable), **log a warning and continue**. This phase is non-fatal — do not block the build on a status update failure.
+
+### Phase 3 — Execute plan
+
+Assess the plan extracted in Phase 1. Choose the execution skill:
+
+| Skill | When to use |
+|-------|-------------|
+| `superpowers:executing-plans` | **Default.** Use for most plans. |
+| `superpowers:subagent-driven-development` | Use **only** when ALL THREE of the following apply: (1) the plan has many independent tasks with no sequential dependencies between them, (2) changes span 5 or more separate subsystems/modules, and (3) the plan is explicitly scoped as large or complex. |
+
+Invoke the chosen skill with the plan content injected as context, and the following **mandatory suppression instruction** included verbatim in the prompt:
+
+> "Do not invoke `finishing-a-development-branch` — this will be handled by the calling skill after all review steps complete."
+
+This instruction is required regardless of which execution skill is chosen. Do not paraphrase or omit it.
+
+### Phase 4 — Verify (optional)
+
+Attempt to invoke the project-local `/verify` skill.
+
+If `/verify` is not available or not found, log the following named warning and continue:
+
+> "⚠️ Phase 4 skipped: `/verify` skill not available in this project"
+
+Do not block on this phase.
+
+### Phase 5 — Inline simplify pass
+
+Review all changed code directly using Claude's built-in reasoning. No separate skill invocation is needed.
+
+Check for:
+- Unnecessary duplication
+- Opportunities to reuse existing utilities
+- Over-engineering
+- Efficiency issues
+
+Fix any issues found directly. Report a brief summary of changes made, or "No changes needed" if nothing required fixing.
+
+### Phase 6 — Code review
+
+Invoke: `token-effort:reviewing-code-systematically`
+
+Address any `BLOCK` or `NEEDS_CHANGES` findings before continuing to Phase 7.
+
+### Phase 7 — Inline security review
+
+Review all changed code directly using Claude's built-in reasoning. No separate skill invocation is needed.
+
+Check for:
+- Injection vulnerabilities
+- Insecure credential handling
+- Exposed secrets
+- Unsafe shell expansion
+- OWASP Top 10 concerns relevant to the changes
+
+Fix any issues found directly. Report a brief summary of findings, or "No security issues found" if the review was clean.
+
+### Phase 8 — Record decisions
+
+Invoke: `token-effort:recording-decisions`
+
+If the skill is not available, **stop immediately** with:
+
+> "❌ Phase 8 blocked: `token-effort:recording-decisions` skill is required but not available.
+>  Install the skill before continuing the build."
+
+Do not proceed to Phase 9 until this phase completes successfully.
+
+### Phase 9 — Finish development branch
+
+Invoke: `superpowers:finishing-a-development-branch`
+
+This step creates the pull request. It runs exactly once, here, at the end of the build process. The execution skills in Phase 3 must not call it — that is what the suppression instruction in Phase 3 enforces.
+
+## Common Mistakes
+
+- **Blocking on Phase 2 failure** — `move-issue-status` errors are non-fatal. Log the warning and continue. Never stop the build because of a status update failure.
+- **Proceeding without a plan comment** — if `<!-- token-effort:planning-gh-issue -->` is not found in the issue, abort immediately with the message to run `/token-effort:planning-gh-issue #N` first. Do not proceed to execution without an approved plan.
+- **Omitting the suppression instruction from the Phase 3 prompt** — the verbatim instruction `"Do not invoke finishing-a-development-branch — this will be handled by the calling skill after all review steps complete."` must be included in the execution skill invocation. Paraphrasing it or omitting it is incorrect.
+- **Calling `finishing-a-development-branch` inside the Phase 3 execution skill** — the PR creation step belongs at Phase 9 and only there. The suppression instruction in Phase 3 enforces this; do not override it.
+- **Choosing `subagent-driven-development` for moderate-scope plans** — the default is `executing-plans`. Only switch to `subagent-driven-development` when all three conditions (independent tasks, 5+ subsystems, explicitly large/complex scope) are met simultaneously.
+- **Silently skipping Phase 4** — Phase 4 is optional but must log a named warning when skipped. Do not silently continue without the warning.
+- **Continuing past Phase 8 when `recording-decisions` is unavailable** — Phase 8 is a hard block. If the skill is not installed, stop with the error message. Do not warn and continue.
+- **Passing the full raw comment body to the execution skill** — strip both the `<!-- brainstorming-gh-issue:spec -->` and `<!-- token-effort:planning-gh-issue -->` marker lines before using their content. Do not include markers in the context.
+- **Not stripping the leading `#` from the issue number** — `gh issue view` requires a bare integer. Strip any `#` prefix before constructing the command.
+- **Using MCP tools for issue operations** — all GitHub interactions must use `gh` CLI commands. Never call `mcp__plugin_github_github__*` tools for any operation.
+- **Calling `finishing-a-development-branch` more than once** — it must be called exactly once, at Phase 9, regardless of how many execution iterations Phase 3 required.
+
+## Eval
+
+- [ ] Issue number resolved from args (with or without `#` prefix)
+- [ ] Fetched issue with `gh issue view --json number,title,body,comments,labels`
+- [ ] Searched comments for `<!-- brainstorming-gh-issue:spec -->` marker
+- [ ] Blocked with clear error when spec comment not found
+- [ ] Searched comments for `<!-- token-effort:planning-gh-issue -->` marker
+- [ ] Blocked with clear error when plan comment not found
+- [ ] Called `token-effort:move-issue-status <N> "Building"` in Phase 2
+- [ ] Phase 2 failure logged as a warning and did not block the build
+- [ ] Assessed plan complexity before choosing execution skill
+- [ ] Used `executing-plans` by default; `subagent-driven-development` only when all three conditions apply
+- [ ] Plan content (marker stripped) passed to execution skill as context
+- [ ] Suppression instruction present verbatim in the execution skill invocation prompt
+- [ ] Attempted `/verify` and skipped with named warning if absent
+- [ ] Performed inline simplify pass after verify; reported a summary
+- [ ] Invoked `token-effort:reviewing-code-systematically`
+- [ ] Addressed BLOCK or NEEDS_CHANGES findings before continuing past Phase 6
+- [ ] Performed inline security review after code review; reported a summary
+- [ ] Invoked `token-effort:recording-decisions` and blocked with error message if not available
+- [ ] Did not proceed to Phase 9 when `recording-decisions` was unavailable
+- [ ] Invoked `superpowers:finishing-a-development-branch` exactly once, at Phase 9
+- [ ] `finishing-a-development-branch` was NOT called by the execution skills in Phase 3
+- [ ] No MCP tools used at any point
