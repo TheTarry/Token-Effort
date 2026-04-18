@@ -2,18 +2,23 @@
 name: init-plus
 description: Interactive repo setup wizard. Offers to create CLAUDE.md, recommend the superpowers plugin, create an auto-triage GitHub Actions workflow, create GitHub issue templates, configure Dependabot, and bootstrap a /verify skill. Use when setting up a new or existing repository.
 user-invocable: true
+---
 
 # Init Plus
+
 ## Overview
 Presents a numbered menu of six repo setup steps. The user selects which steps to run (by number or "all"), and the skill executes them in fixed order 1→6. Each step handles overwrite detection and asks before replacing existing files.
 
 **Usage:** `/token-effort:init-plus`
+
 Step 5 (Dependabot) is delegated entirely to `token-effort:configuring-dependabot`.
+
 ## When to Use
 
 **Use when:**
 - Setting up a new repository with standard project infrastructure
 - Adding one or more standard files to an existing repository
+
 **Do not use when:**
 - You only want to configure Dependabot — run `/token-effort:configuring-dependabot` directly instead
 
