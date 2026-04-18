@@ -36,7 +36,7 @@ jobs:
           repositories: ${{ github.event.repository.name }}
 
       - name: ⤵️ Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ steps.release-manager-token.outputs.token }}
           fetch-depth: 1
