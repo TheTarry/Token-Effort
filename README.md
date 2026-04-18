@@ -50,7 +50,7 @@ Hooks configure automation triggers in [plugins/token-effort/hooks/hooks.json](p
 
 ### Standalone Skills
 
-The following skills are used independently, not as part of the issue lifecycle workflows below:
+The following skills are embedded within the workflows (see below) and not typically invoked directly:
 
 - **computing-branch-diff** — Used by code review agents to compute and analyze changes between branches
 - **reviewing-code-systematically** — Dispatches parallel reviewer agents to evaluate code quality and documentation
