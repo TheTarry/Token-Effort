@@ -46,7 +46,7 @@ Skills become `/token-effort:triaging-gh-issues`, `/token-effort:computing-branc
 
 ### 🪝 Hooks
 
-Hooks configure automation triggers in [plugins/token-effort/hooks/hooks.json](plugins/token-effort/hooks/hooks.json). The `PreToolUse` hook on Bash calls `compound_bash_allow.py`, which validates and allowlists compound bash commands before execution — this runs automatically after plugin installation.
+Hooks configure automation triggers in [plugins/token-effort/hooks/hooks.json](plugins/token-effort/hooks/hooks.json).
 
 ### Standalone Skills
 
