@@ -2,36 +2,27 @@
 name: init-plus
 description: Interactive repo setup wizard. Offers to create CLAUDE.md, recommend the superpowers plugin, create an auto-triage GitHub Actions workflow, create GitHub issue templates, and configure Dependabot. Use when setting up a new or existing repository.
 user-invocable: true
----
 
 # Init Plus
-
 ## Overview
-
 Presents a numbered menu of six repo setup steps. The user selects which steps to run (by number or "all"), and the skill executes them in fixed order 1→6. Each step handles overwrite detection and asks before replacing existing files.
 
 **Usage:** `/token-effort:init-plus`
-
 Step 5 (Dependabot) is delegated entirely to `token-effort:configuring-dependabot`.
-
 ## When to Use
 
 **Use when:**
 - Setting up a new repository with standard project infrastructure
 - Adding one or more standard files to an existing repository
-
 **Do not use when:**
 - You only want to configure Dependabot — run `/token-effort:configuring-dependabot` directly instead
 
 ## Prerequisites
-
 - For Step 3: a GitHub App and project board must be configured — see `docs/github-setup.md`
 - For Step 5: the `token-effort:configuring-dependabot` skill must be installed
 
 ## Process
-
 ### Phase 1 — Repo scan & menu presentation
-
 Scan the repository using Glob to detect which artefacts already exist:
 
 | Step | File/path to check |
@@ -42,10 +33,8 @@ Scan the repository using Glob to detect which artefacts already exist:
 | 4. Issue templates | `.github/ISSUE_TEMPLATE/` (any file in this directory) |
 | 5. Dependabot | `.github/dependabot.yml` |
 | 6. Bootstrap `/verify` skill | `.claude/skills/verify/SKILL.md` |
-| 6. Bootstrap `/verify` skill | `.claude/skills/verify/SKILL.md` |
 
 Present the following menu, substituting the correct status annotation for each item:
-
 ```
 Select which setup steps to run (e.g. "1 3 5" or "all"):
 
@@ -55,7 +44,6 @@ Select which setup steps to run (e.g. "1 3 5" or "all"):
 4. Create GitHub issue templates              [<status>]
 5. Configure Dependabot                       [<status>]
 6. Bootstrap `/verify` skill                  [<status>]
-6. Bootstrap `/verify` skill                  [<status>]
 ```
 
 Status annotations:
@@ -64,69 +52,49 @@ Status annotations:
 - `[not verified]` — superpowers plugin only
 
 Wait for the user to reply with space-separated numbers (e.g. `1 3`) or `all`. Parse the reply into a sorted list of step numbers. Always execute steps in ascending order 1→6 regardless of input order.
-
 ### Phase 2 — Execute selected steps
-
 Execute only the steps the user selected, in order.
 
 ---
-
 **Step 1 — CLAUDE.md**
-
 If `CLAUDE.md` exists:
 
 > "`CLAUDE.md` already exists. Overwrite? [yes/no]"
-
 Wait for confirmation. If the user says no, note "CLAUDE.md: skipped (overwrite declined)" in the summary and move on.
-
 Invoke `/init` via the Skill tool (`skill: "init"`) to generate `CLAUDE.md`. Do not write `CLAUDE.md` directly or use a hardcoded template — `/init` analyses the project and produces contextual content.
 
 ---
-
 **Step 2 — Superpowers plugin**
-
 Print:
 
 > **Strongly recommended: Install the `superpowers` Claude plugin.**
 >
 > The `superpowers` plugin adds powerful skills for planning, TDD, debugging, and code review.
->
 > Install from the Claude Code plugin marketplace, or visit: https://github.com/obra/superpowers
 
 Ask:
-
 > "Have you installed the superpowers plugin (or do you already have it)? [yes/no/skip]"
-
 If the user says yes, note "Superpowers plugin: confirmed installed" in the summary.
 If the user says no or skips, note "Superpowers plugin: not installed (recommended)" in the summary. Do not block.
 
 ---
-
 **Step 3 — Auto-triage GitHub Actions workflow**
-
 Print:
 
 > "Step 3 requires a GitHub App and project board. See `docs/github-setup.md` for setup instructions."
-
 Ask:
-
 > "Is everything in `docs/github-setup.md` configured? [yes/no/skip]"
 
 If the user says no or skips, note "Triage workflow: skipped (prerequisites not met)" in the summary and continue to Step 4.
-
 If `.github/workflows/triaging-gh-issues.yml` exists:
-
 > "`.github/workflows/triaging-gh-issues.yml` already exists. Overwrite? [yes/no]"
 
 Wait for confirmation. If the user says no, note "Triage workflow: skipped (overwrite declined)" in the summary and continue.
-
 Create directory `.github/workflows/` if it does not exist.
-
 Write `.github/workflows/triaging-gh-issues.yml`:
 
 ```yaml
 name: Triage GitHub Issues
-
 on:
   schedule:
     - cron: '0 4 * * 1'
@@ -168,24 +136,18 @@ jobs:
 ```
 
 ---
-
 **Step 4 — GitHub issue templates**
-
 Check if any of the following files exist:
 - `.github/ISSUE_TEMPLATE/01-feature_request.md`
 - `.github/ISSUE_TEMPLATE/02-bug_report.md`
 - `.github/ISSUE_TEMPLATE/config.yml`
 
 If any exist:
-
 > "One or more issue template files already exist. Overwrite all? [yes/no]"
-
 Wait for confirmation. If the user says no, note "Issue templates: skipped (overwrite declined)" in the summary and continue.
 
 Create directory `.github/ISSUE_TEMPLATE/` if it does not exist.
-
 Write `.github/ISSUE_TEMPLATE/01-feature_request.md`:
-
 ```markdown
 ---
 name: Feature request
@@ -195,20 +157,17 @@ labels: enhancement
 assignees: ''
 
 ---
-
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen.
-
 **Describe alternatives you've considered**
 A clear and concise description of any alternative solutions or features you've considered.
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
 ```
-
 Write `.github/ISSUE_TEMPLATE/02-bug_report.md`:
 
 ```markdown
@@ -222,7 +181,6 @@ assignees: ''
 
 **Describe the bug**
 A clear and concise description of what the bug is.
-
 **To Reproduce**
 Steps to reproduce the behavior:
 
@@ -233,50 +191,37 @@ Steps to reproduce the behavior:
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
-
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
 ```
-
 Write `.github/ISSUE_TEMPLATE/config.yml`:
 
 ```yaml
 blank_issues_enabled: false
 ```
-
 ---
 
 **Step 5 — Dependabot config**
-
 Invoke: `token-effort:configuring-dependabot`
-
 Do not perform any Dependabot logic directly. The sub-skill handles all scanning, overwrite detection, and file writing.
 
 ---
-
 **Step 6 — Bootstrap `/verify` skill**
-
 Check if `.claude/skills/verify/SKILL.md` already exists in the repository.
 
 If it exists:
-
 > "`/verify` skill already exists — skipping."
-
 Note "`/verify`: skipped (already exists)" in the summary and continue.
 
 Otherwise, ask:
-
 > "What commands should be run to verify this project is working correctly? List them in the order they should run."
-
 If the user says they don't know yet or wants to skip:
 
 > "`/verify` not configured — run `/init-plus` again when you're ready to set this up."
-
 Note "`/verify`: skipped (no commands provided)" in the summary and continue.
-
 Otherwise, confirm the list back to the user:
 
 > "I'll configure `/verify` with these commands in order:
@@ -286,9 +231,7 @@ Otherwise, confirm the list back to the user:
 > Is that correct? [yes/no]"
 
 Wait for confirmation. If the user says no, re-ask for the command list.
-
 Create directory `.claude/skills/verify/` if it does not exist.
-
 Write `.claude/skills/verify/SKILL.md`, substituting the confirmed commands for `<command N>`:
 
 ~~~markdown
@@ -300,22 +243,17 @@ user-invocable: true
 ---
 
 # Verify
-
 Run all project checks to confirm changes are working correctly.
-
 ## Commands
 
 Run each of the following commands. Report the result of each (pass/fail and any output).
 If any command fails, stop immediately and report the failure clearly before continuing.
-
 1. `<command 1>`
 2. `<command 2>`
 ~~~
 
 Note "`/verify`: created" in the summary.
-
 ### Phase 3 — Completion summary
-
 Print a summary of all selected steps:
 
 ```
@@ -329,9 +267,7 @@ Print a summary of all selected steps:
 ```
 
 Adjust each line to reflect the actual outcome (e.g. "created", "skipped (overwrite declined)", "skipped (prerequisites not met)", "not installed (recommended)"). Include only the steps the user selected — omit unselected steps from the summary entirely.
-
 No git commit is made. The user decides what to commit.
-
 ## Common Mistakes
 
 - **Skipping overwrite checks** — always warn and ask before writing any file that already exists.
@@ -345,12 +281,8 @@ No git commit is made. The user decides what to commit.
 - **Writing `/verify` when it already exists** — always check for `.claude/skills/verify/SKILL.md` first. If it exists, skip with the log message and do not overwrite.
 - **Not confirming commands before writing** — always echo the command list back to the user and wait for a yes confirmation before writing `.claude/skills/verify/SKILL.md`.
 - **Writing the file when the user skips** — if the user says they don't know or wants to skip, do not generate any file. Log the "not configured" message and move on.
-- **Writing `/verify` when it already exists** — always check for `.claude/skills/verify/SKILL.md` first. If it exists, skip with the log message and do not overwrite.
-- **Not confirming commands before writing** — always echo the command list back to the user and wait for a yes confirmation before writing `.claude/skills/verify/SKILL.md`.
-- **Writing the file when the user skips** — if the user says they don't know or wants to skip, do not generate any file. Log the "not configured" message and move on.
 
 ## Eval
-
 - [ ] Scanned repo for all six artefacts before presenting menu
 - [ ] Presented menu with correct status annotations (`[not present]`, `[exists — will overwrite]`, `[not verified]`)
 - [ ] Waited for user selection before executing any steps
