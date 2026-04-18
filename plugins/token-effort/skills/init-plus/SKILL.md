@@ -8,7 +8,7 @@ user-invocable: true
 
 ## Overview
 
-Presents a numbered menu of five repo setup steps. The user selects which steps to run (by number or "all"), and the skill executes them in fixed order 1→5. Each step handles overwrite detection and asks before replacing existing files.
+Presents a numbered menu of six repo setup steps. The user selects which steps to run (by number or "all"), and the skill executes them in fixed order 1→6. Each step handles overwrite detection and asks before replacing existing files.
 
 **Usage:** `/token-effort:init-plus`
 
@@ -41,6 +41,8 @@ Scan the repository using Glob to detect which artefacts already exist:
 | 3. Triage workflow | `.github/workflows/triaging-gh-issues.yml` |
 | 4. Issue templates | `.github/ISSUE_TEMPLATE/` (any file in this directory) |
 | 5. Dependabot | `.github/dependabot.yml` |
+| 6. Bootstrap `/verify` skill | `.claude/skills/verify/SKILL.md` |
+| 6. Bootstrap `/verify` skill | `.claude/skills/verify/SKILL.md` |
 
 Present the following menu, substituting the correct status annotation for each item:
 
@@ -52,6 +54,8 @@ Select which setup steps to run (e.g. "1 3 5" or "all"):
 3. Create auto-triage GitHub Actions workflow [<status>]
 4. Create GitHub issue templates              [<status>]
 5. Configure Dependabot                       [<status>]
+6. Bootstrap `/verify` skill                  [<status>]
+6. Bootstrap `/verify` skill                  [<status>]
 ```
 
 Status annotations:
@@ -59,7 +63,7 @@ Status annotations:
 - `[exists — will overwrite]` — file/dir exists and would be replaced
 - `[not verified]` — superpowers plugin only
 
-Wait for the user to reply with space-separated numbers (e.g. `1 3`) or `all`. Parse the reply into a sorted list of step numbers. Always execute steps in ascending order 1→5 regardless of input order.
+Wait for the user to reply with space-separated numbers (e.g. `1 3`) or `all`. Parse the reply into a sorted list of step numbers. Always execute steps in ascending order 1→6 regardless of input order.
 
 ### Phase 2 — Execute selected steps
 
@@ -253,6 +257,63 @@ Do not perform any Dependabot logic directly. The sub-skill handles all scanning
 
 ---
 
+**Step 6 — Bootstrap `/verify` skill**
+
+Check if `.claude/skills/verify/SKILL.md` already exists in the repository.
+
+If it exists:
+
+> "`/verify` skill already exists — skipping."
+
+Note "`/verify`: skipped (already exists)" in the summary and continue.
+
+Otherwise, ask:
+
+> "What commands should be run to verify this project is working correctly? List them in the order they should run."
+
+If the user says they don't know yet or wants to skip:
+
+> "`/verify` not configured — run `/init-plus` again when you're ready to set this up."
+
+Note "`/verify`: skipped (no commands provided)" in the summary and continue.
+
+Otherwise, confirm the list back to the user:
+
+> "I'll configure `/verify` with these commands in order:
+> 1. `<cmd>`
+> 2. `<cmd>`
+> ...
+> Is that correct? [yes/no]"
+
+Wait for confirmation. If the user says no, re-ask for the command list.
+
+Create directory `.claude/skills/verify/` if it does not exist.
+
+Write `.claude/skills/verify/SKILL.md`, substituting the confirmed commands for `<command N>`:
+
+~~~markdown
+---
+name: verify
+description: Use when asked to verify changes, run all checks, confirm everything
+  is working, run tests, or check nothing is broken before committing
+user-invocable: true
+---
+
+# Verify
+
+Run all project checks to confirm changes are working correctly.
+
+## Commands
+
+Run each of the following commands. Report the result of each (pass/fail and any output).
+If any command fails, stop immediately and report the failure clearly before continuing.
+
+1. `<command 1>`
+2. `<command 2>`
+~~~
+
+Note "`/verify`: created" in the summary.
+
 ### Phase 3 — Completion summary
 
 Print a summary of all selected steps:
@@ -264,6 +325,7 @@ Print a summary of all selected steps:
 - Triage workflow: created
 - Issue templates: created
 - Dependabot: delegated to /configuring-dependabot
+- /verify: created
 ```
 
 Adjust each line to reflect the actual outcome (e.g. "created", "skipped (overwrite declined)", "skipped (prerequisites not met)", "not installed (recommended)"). Include only the steps the user selected — omit unselected steps from the summary entirely.
@@ -274,21 +336,27 @@ No git commit is made. The user decides what to commit.
 
 - **Skipping overwrite checks** — always warn and ask before writing any file that already exists.
 - **Executing steps not selected by the user** — only run the steps the user chose.
-- **Executing steps out of order** — always run in order 1→5 regardless of user input order.
+- **Executing steps out of order** — always run in order 1→6 regardless of user input order.
 - **Blocking on Step 3 prerequisites** — if the user says prerequisites are not set up, note it in the summary and continue. Do not halt the skill.
 - **Blocking on Step 2 "no"** — if the user says the superpowers plugin is not installed, note it and continue. Do not halt.
 - **Performing Dependabot logic directly in Step 5** — always delegate to `token-effort:configuring-dependabot`. Do not scan ecosystems or write `dependabot.yml` yourself.
 - **Writing `CLAUDE.md` directly in Step 1** — always delegate to `/init` via the Skill tool. Do not write the file directly or use a hardcoded template.
 - **Omitting skipped steps from the summary** — every selected step must appear in the summary, even if skipped or declined.
+- **Writing `/verify` when it already exists** — always check for `.claude/skills/verify/SKILL.md` first. If it exists, skip with the log message and do not overwrite.
+- **Not confirming commands before writing** — always echo the command list back to the user and wait for a yes confirmation before writing `.claude/skills/verify/SKILL.md`.
+- **Writing the file when the user skips** — if the user says they don't know or wants to skip, do not generate any file. Log the "not configured" message and move on.
+- **Writing `/verify` when it already exists** — always check for `.claude/skills/verify/SKILL.md` first. If it exists, skip with the log message and do not overwrite.
+- **Not confirming commands before writing** — always echo the command list back to the user and wait for a yes confirmation before writing `.claude/skills/verify/SKILL.md`.
+- **Writing the file when the user skips** — if the user says they don't know or wants to skip, do not generate any file. Log the "not configured" message and move on.
 
 ## Eval
 
-- [ ] Scanned repo for all five artefacts before presenting menu
+- [ ] Scanned repo for all six artefacts before presenting menu
 - [ ] Presented menu with correct status annotations (`[not present]`, `[exists — will overwrite]`, `[not verified]`)
 - [ ] Waited for user selection before executing any steps
-- [ ] Parsed "all" as selecting all five steps
+- [ ] Parsed "all" as selecting all six steps
 - [ ] Executed only the selected steps
-- [ ] Executed steps in order 1→5 regardless of input order
+- [ ] Executed steps in order 1→6 regardless of input order
 - [ ] Step 1: Warned and confirmed before overwriting `CLAUDE.md`
 - [ ] Step 1: Invoked `/init` via Skill tool to generate `CLAUDE.md`
 - [ ] Step 1: Did not write `CLAUDE.md` directly or use a hardcoded template
@@ -302,5 +370,12 @@ No git commit is made. The user decides what to commit.
 - [ ] Step 4: Wrote all three template files with correct content
 - [ ] Step 5: Delegated to `token-effort:configuring-dependabot` via Skill tool
 - [ ] Step 5: Did not perform any Dependabot logic directly
+- [ ] Step 6: Checked for existing `.claude/skills/verify/SKILL.md` before proceeding
+- [ ] Step 6: Skipped with log message when `/verify` already exists; did not overwrite
+- [ ] Step 6: Asked for verification commands when skill not present
+- [ ] Step 6: Confirmed command list with user before writing
+- [ ] Step 6: Did not write file when user skipped; logged "not configured" message
+- [ ] Step 6: Wrote `.claude/skills/verify/SKILL.md` with correct frontmatter, description, ordered command list, and stop-on-failure instruction
+- [ ] Step 6: Noted outcome in completion summary
 - [ ] Printed completion summary covering every selected step with accurate outcomes
 - [ ] Made no git commit
