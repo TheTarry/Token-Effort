@@ -71,16 +71,42 @@ graph LR
 
 ```mermaid
 graph LR
-    A1["/propose-feature"] --> C["📋 New"]
-    A2["/report-bug"] --> C
-    C --> D["/triaging-gh-issues"]
-    D --> E["🧠 Brainstorming"]
-    E --> F["/brainstorming-gh-issue"]
-    F --> G["📐 Planning"]
-    G --> H["/planning-gh-issue"]
-    H --> I["🏗️ Building"]
-    I --> J["/building-gh-issue + agents"]
-    J --> K["✅ Done"]
+    A1["/propose-feature"]
+    A2["/report-bug"]
+    DONE["✅ Done"]
+
+    subgraph COL1["📋 New"]
+        direction TB
+        TRIAGE["/triaging-gh-issues"]
+    end
+
+    subgraph COL2["🧠 Brainstorming"]
+        direction TB
+        BRAIN["/brainstorming-gh-issue"]
+        SPEC(["📄 Design Spec"])
+    end
+
+    subgraph COL3["📐 Planning"]
+        direction TB
+        PLAN["/planning-gh-issue"]
+        PLANOUT(["📄 Implementation Plan"])
+    end
+
+    subgraph COL4["🏗️ Building"]
+        direction TB
+        BUILD["/building-gh-issue + agents"]
+        PR(["📄 Pull Request + Decision Record(s)"])
+    end
+
+    A1 --> TRIAGE
+    A2 --> TRIAGE
+    TRIAGE --> BRAIN
+    BRAIN -.-> SPEC
+    BRAIN --> PLAN
+    PLAN -.-> PLANOUT
+    PLAN --> BUILD
+    BUILD -.-> PR
+    BUILD --> DONE
 ```
 
 ## 🏗️ Structure
