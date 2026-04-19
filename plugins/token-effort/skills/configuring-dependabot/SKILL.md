@@ -82,7 +82,12 @@ Check for **both** `.github/dependabot.yml` and `.github/dependabot.yaml`.
 
 ### Phase 3 — Write `.github/dependabot.yml`
 
-Write the file with one entry per detected ecosystem. Always use `directory: /`.
+**When no existing file is present:** write the full file from scratch with one entry per detected ecosystem. Always use `directory: /`.
+
+**When an existing file is present (from the Phase 2 merge):**
+- **New** ecosystems: append their YAML block to the end of the `updates:` list
+- **Overwrite** decisions: replace the conflicting entry's block in-place (from its `  - package-ecosystem:` line to the line before the next `  - package-ecosystem:` entry, or the end of the `updates:` list)
+- **Identical** and **Retain** entries: leave the file untouched
 
 **Cooldown support:** Only include the `cooldown` block for ecosystems that support it. The following ecosystems do **NOT** support cooldown and must not have a `cooldown` block:
 
@@ -122,7 +127,18 @@ updates:
 
 After writing, report:
 
+**Fresh file (no prior file existed):**
 > "Written `.github/dependabot.yml` with entries for: [comma-separated list of ecosystems]."
+
+**Existing file updated:**
+> "Updated `.github/dependabot.yml`: added [ecosystems], updated [ecosystems], retained [ecosystems]."
+
+Report key:
+- **added** = new ecosystems appended
+- **updated** = conflicting ecosystems the user chose to overwrite
+- **retained** = conflicting ecosystems the user chose to keep as-is
+- Identical entries are silently skipped and do not appear in the report
+- Omit any category with zero items
 
 ## Common Mistakes
 
