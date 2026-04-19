@@ -153,7 +153,7 @@ Report key:
 
 ## Eval
 
-- [ ] Scanned all six ecosystem indicator patterns using Glob
+- [ ] Scanned all seven ecosystem indicator patterns using Glob
 - [ ] Deduplicated ecosystems (no duplicate entries for pip, bundler, etc.)
 - [ ] Reported "no ecosystems detected" and stopped (no file written) when none found
 - [ ] Checked for both `.github/dependabot.yml` and `.github/dependabot.yaml`
