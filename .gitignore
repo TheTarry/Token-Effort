@@ -1,4 +1,6 @@
 .worktrees/
+docs/superpowers/
+
 __pycache__/
 *.pyc
 docs/superpowers/
