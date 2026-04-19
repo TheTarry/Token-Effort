@@ -1,4 +1,5 @@
 ## Scenario
+<!-- Covers: SKILL.md "Step 3 — Auto-triage GitHub Actions workflow" prerequisite block -->
 The user selects "3". The skill prints the Step 3 prerequisite message and asks if
 everything is configured.
 

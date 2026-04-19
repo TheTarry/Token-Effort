@@ -23,6 +23,7 @@ Step 5 (Dependabot) is delegated entirely to `token-effort:configuring-dependabo
 - You only want to configure Dependabot — run `/token-effort:configuring-dependabot` directly instead
 
 ## Prerequisites
+<!-- The version tag in the github-setup.md URLs below is updated automatically by release.yml at publish time. Do not change it manually. -->
 - For Step 3: a GitHub App and project board must be configured — see [docs/github-setup.md](https://github.com/HeadlessTarry/Token-Effort/blob/v0.6.0/docs/github-setup.md)
 - For Step 5: the `token-effort:configuring-dependabot` skill must be installed
 
