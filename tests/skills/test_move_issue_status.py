@@ -1,7 +1,9 @@
+import io
 import json
-import sys
 import os
+import sys
 import unittest
+from contextlib import redirect_stdout
 from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../plugins/token-effort/skills/move-issue-status'))
@@ -234,26 +236,23 @@ class TestRunExplicitMode(unittest.TestCase):
 
 class TestMain(unittest.TestCase):
     @patch('move_issue_status.run', return_value={"status": "moved", "issue": 84, "to": "Planning", "project": "X"})
-    @patch('move_issue_status.resolve_repo', return_value=("H", "R"))
-    def test_strips_hash_prefix(self, _repo, mock_run):
-        with patch('sys.argv', ['move_issue_status.py', '#84', 'Planning']):
-            import io
-            from contextlib import redirect_stdout
-            buf = io.StringIO()
-            with redirect_stdout(buf):
-                m.main()
+    def test_strips_hash_prefix(self, mock_run):
+        buf = io.StringIO()
+        with patch('sys.argv', ['move_issue_status.py', '#84', 'Planning']), redirect_stdout(buf):
+            m.main()
         mock_run.assert_called_once_with(84, "Planning")
+        output = json.loads(buf.getvalue())
+        self.assertEqual(output["status"], "moved")
+        self.assertEqual(output["issue"], 84)
 
     @patch('move_issue_status.run', return_value={"status": "skipped"})
-    @patch('move_issue_status.resolve_repo', return_value=("H", "R"))
-    def test_advance_mode_no_status_arg(self, _repo, mock_run):
-        with patch('sys.argv', ['move_issue_status.py', '42']):
-            import io
-            from contextlib import redirect_stdout
-            buf = io.StringIO()
-            with redirect_stdout(buf):
-                m.main()
+    def test_advance_mode_no_status_arg(self, mock_run):
+        buf = io.StringIO()
+        with patch('sys.argv', ['move_issue_status.py', '42']), redirect_stdout(buf):
+            m.main()
         mock_run.assert_called_once_with(42, None)
+        output = json.loads(buf.getvalue())
+        self.assertEqual(output["status"], "skipped")
 
 
 if __name__ == '__main__':

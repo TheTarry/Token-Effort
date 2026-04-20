@@ -24,14 +24,18 @@ def resolve_repo() -> tuple[str, str]:
     if url.startswith("https://"):
         parts = url.rstrip("/").removesuffix(".git").split("/")
         return parts[-2], parts[-1]
-    repo_part = url.split(":", 1)[1].removesuffix(".git")
-    owner, name = repo_part.split("/", 1)
+    # Expected SSH form: git@github.com:owner/repo.git
+    try:
+        repo_part = url.split(":", 1)[1].removesuffix(".git")
+        owner, name = repo_part.split("/", 1)
+    except (IndexError, ValueError) as exc:
+        raise ValueError(f"Cannot parse remote URL: {url!r}") from exc
     return owner, name
 
 
 def find_project_item(owner: str, issue_number: int) -> list[dict]:
     result = subprocess.run(
-        ["gh", "project", "list", "--owner", owner, "--format", "json", "--limit", "100"],
+        ["gh", "project", "list", "--owner", owner, "--format", "json", "--limit", "100"],  # practical cap; raise if >100 projects
         capture_output=True, text=True,
     )
     data = json.loads(result.stdout)
@@ -41,7 +45,7 @@ def find_project_item(owner: str, issue_number: int) -> list[dict]:
         pnum = project["number"]
         items_result = subprocess.run(
             ["gh", "project", "item-list", str(pnum),
-             "--owner", owner, "--format", "json", "--limit", "1000"],
+             "--owner", owner, "--format", "json", "--limit", "1000"],  # boards with >1000 items may miss matches
             capture_output=True, text=True,
         )
         items_data = json.loads(items_result.stdout)
@@ -71,7 +75,7 @@ def get_status_field(owner: str, project_number: int) -> dict | None:
 
 
 def run(issue_number: int, target_status: str | None) -> dict:
-    owner, _repo = resolve_repo()
+    owner, _repo = resolve_repo()  # gh project commands use owner only
     matches = find_project_item(owner, issue_number)
 
     if target_status is None:
@@ -90,13 +94,15 @@ def run(issue_number: int, target_status: str | None) -> dict:
             idx = names.index(current)
         except ValueError:
             return {"status": "skipped"}
-        if idx > 0 or idx >= len(options) - 1:
+        if idx != 0:  # not in first column
+            return {"status": "skipped"}
+        if idx >= len(options) - 1:  # no next column exists
             return {"status": "skipped"}
         target_option = options[idx + 1]
     else:
         if not matches:
             return {"status": "error", "message": f"Issue #{issue_number} is not on any GitHub project board."}
-        match = matches[0]
+        match = matches[0]  # when an explicit status is provided, use the first matching project
         field = get_status_field(owner, match["project_number"])
         if not field:
             return {"status": "error", "message": f"No Status field found in project '{match['project_name']}'."}

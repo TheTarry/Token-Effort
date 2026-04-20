@@ -8,7 +8,7 @@ user-invocable: true
 
 ## 🌐 Overview
 
-Moves a GitHub issue to a named project board status column (explicit mode), or advances it one column to the right if it is currently in the first column (advance mode). All project board operations are executed by `move_issue_status.py`. The skill locates the script, runs it, and reports the result.
+Moves a GitHub issue to a named project board status column (explicit mode), or advances it one column to the right if it is currently in the first column and not already in the last column (advance mode). All project board operations are executed by `move_issue_status.py`. The skill locates the script, runs it, and reports the result.
 
 **Usage:** `/token-effort:move-issue-status <issue-number> [<status>]`
 
@@ -19,7 +19,7 @@ Moves a GitHub issue to a named project board status column (explicit mode), or 
 
 **Use when:**
 - You want to move an issue to a specific named project board column
-- You want to advance an issue from its current first-column status to the next column
+- You want to advance an issue from its current first-column status to the next column (skips silently if not in first column, already in last column, on multiple boards, or board has no Status field)
 
 **Do not use when:**
 - You need to move multiple issues at once (run once per issue)
