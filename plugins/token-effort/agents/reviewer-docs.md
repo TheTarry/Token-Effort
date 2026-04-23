@@ -2,7 +2,7 @@
 name: reviewer-docs
 description: Use when reviewing documentation files for quality and accuracy — README.md, docs/*, or docs/*.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: haiku
 ---
 
 # Reviewer Docs
