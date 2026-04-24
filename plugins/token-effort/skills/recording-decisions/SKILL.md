@@ -8,7 +8,7 @@ user-invocable: true
 
 ## Dispatcher
 
-Delegate this skill's entire workflow to a Haiku subagent. Use the `Agent` tool with `model: haiku`. Embed all instructions below (Overview through Eval) verbatim as the subagent prompt, and include this instruction in the prompt: **"Use `AskUserQuestion` for any mid-task user interaction — slug confirmation, Context/Decision/Consequences field entry, and supersession selection."** Report the subagent's result to the user without modification.
+Delegate this skill's entire workflow to a Haiku subagent. Use the `Agent` tool with `model: haiku`. Embed all instructions below (Overview through Eval) verbatim as the subagent prompt, and include this instruction in the prompt: **"Use `AskUserQuestion` for any mid-task user interaction — slug confirmation, Context/Decision/Consequences field entry, and supersession selection."** `AskUserQuestion` is a standard Claude Code tool available to all subagents for synchronous mid-task user prompts. Report the subagent's result to the user without modification.
 
 ## Overview
 

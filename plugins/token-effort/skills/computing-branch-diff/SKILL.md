@@ -7,7 +7,7 @@ description: Use when a subagent needs to know what changed on the current branc
 
 ## Dispatcher
 
-Delegate this skill's entire workflow to a Haiku subagent. Use the `Agent` tool with `model: haiku`. Embed the resolved script path (already substituted in this file by Claude Code) and all instructions below (Overview through Eval) verbatim as the subagent prompt. Report the subagent's result to the user without modification.
+Delegate this skill's entire workflow to a Haiku subagent. Use the `Agent` tool with `model: haiku`. Embed all instructions below (Overview through Eval) verbatim as the subagent prompt — the script path in Step 1 is already hardcoded (Claude Code substitutes `CLAUDE_PLUGIN_ROOT` at plugin load time, so the path in Step 1 is correct as-shipped). This skill uniquely requires noting the resolved path because it delegates to a companion shell script; skills without external scripts omit this clause. Report the subagent's result to the user without modification.
 
 ## Overview
 
