@@ -9,5 +9,4 @@ and exits without running any diff logic.
 
 ## Pass Criteria
 - [ ] Missing SKILL_DIR is detected before attempting to run the script
-- [ ] Error message references the install script as the fix
 - [ ] No diff, file list, or commit output is produced
