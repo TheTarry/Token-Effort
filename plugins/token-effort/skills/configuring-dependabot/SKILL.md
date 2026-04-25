@@ -6,7 +6,13 @@ user-invocable: true
 
 # Configuring Dependabot
 
-## Overview
+## ⛔ Dispatcher — Act on This Before Reading Further
+
+**Do not execute any step below.** Your only action is to spawn a Haiku subagent via the `Agent` tool with `model: haiku`. Embed all instructions under "Subagent Instructions" below verbatim as the subagent prompt, and include this instruction in the prompt: **"Use `AskUserQuestion` for any mid-task user interaction — per-ecosystem conflict resolution prompts and the `.yaml` extension overwrite confirmation."** `AskUserQuestion` is a standard Claude Code tool available to all subagents for synchronous mid-task user prompts. Report the subagent's result to the user without modification.
+
+## 📋 Subagent Instructions — Pass Verbatim, Do Not Execute Directly
+
+### Overview
 
 Scans the repository for package ecosystem indicators and writes `.github/dependabot.yml` with one entry per detected ecosystem. All entries use a weekly schedule; cooldown settings are included only for ecosystems that support them.
 
@@ -14,7 +20,7 @@ Scans the repository for package ecosystem indicators and writes `.github/depend
 
 Reference: https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
 
-## When to Use
+### When to Use
 
 **Use when:**
 - You want to add or update Dependabot for a repository
@@ -23,13 +29,13 @@ Reference: https://docs.github.com/en/code-security/reference/supply-chain-secur
 **Do not use when:**
 - You only want to inspect which ecosystems are present without writing a file
 
-## Prerequisites
+### Prerequisites
 
 None. All operations are local file reads and writes.
 
-## Process
+### Process
 
-### Phase 1 — Scan for ecosystem indicators
+#### Phase 1 — Scan for ecosystem indicators
 
 Use the Glob tool to check for each of the following patterns from the repo root. Each ecosystem must appear **at most once** in the output list — if multiple file patterns map to the same ecosystem, deduplicate (e.g. both `requirements.txt` and `pyproject.toml` both map to `pip`; only one `pip` entry is written).
 
@@ -51,7 +57,7 @@ If no ecosystems are detected, output:
 
 Then stop without writing any file.
 
-### Phase 2 — Check for existing file
+#### Phase 2 — Check for existing file
 
 Check for **both** `.github/dependabot.yml` and `.github/dependabot.yaml`.
 
@@ -80,7 +86,7 @@ Check for **both** `.github/dependabot.yml` and `.github/dependabot.yaml`.
 
   Then stop without writing.
 
-### Phase 3 — Write `.github/dependabot.yml`
+#### Phase 3 — Write `.github/dependabot.yml`
 
 **When no existing file is present:** write the full file from scratch with one entry per detected ecosystem. Always use `directory: /`.
 
@@ -140,7 +146,7 @@ Report key:
 - Identical entries are silently skipped and do not appear in the report
 - Omit any category with zero items
 
-## Common Mistakes
+### Common Mistakes
 
 - **Applying cooldown to `github-actions`** — `github-actions` does not support the cooldown option. Never include a `cooldown` block on a `github-actions` entry.
 - **Writing duplicate ecosystem entries** — if both `requirements.txt` and `pyproject.toml` exist, write only one `pip` entry. If both `Gemfile` and `*.gemspec` exist, write only one `bundler` entry.
@@ -151,7 +157,7 @@ Report key:
 - **Failing to detect `.pre-commit-config.yaml`** — this file maps to the `pre-commit` ecosystem. It must be checked in Phase 1 alongside all other indicator files.
 - **Using a non-root directory** — always use `directory: /` unless the user specifies otherwise.
 
-## Eval
+### Eval
 
 - [ ] Scanned all seven ecosystem indicator patterns using Glob
 - [ ] Deduplicated ecosystems (no duplicate entries for pip, bundler, etc.)

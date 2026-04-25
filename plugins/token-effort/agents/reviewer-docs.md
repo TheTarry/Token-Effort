@@ -2,7 +2,7 @@
 name: reviewer-docs
 description: Use when reviewing documentation files for quality and accuracy — README.md, docs/*, or docs/*.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: haiku
 ---
 
 # Reviewer Docs
@@ -77,9 +77,9 @@ When invoked:
 5. Work through the Review Checklist for each file
 6. Compile findings into the structured output format
 
-If no documentation files are present in the file set:
-- Branch mode: report "No documentation files found in diff. Consider whether code changes require documentation updates."
-- Full-repo mode: report "No documentation files found in repository."
+If no documentation files are present in the file set, emit `VERDICT: SKIP` followed by:
+- Branch mode: "No documentation files found in diff. Consider whether code changes require documentation updates."
+- Full-repo mode: "No documentation files found in repository."
 
 ### Review Checklist
 
