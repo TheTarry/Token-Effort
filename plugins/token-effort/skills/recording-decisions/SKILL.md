@@ -8,7 +8,7 @@ user-invocable: true
 
 ## ⛔ Dispatcher — Act on This Before Reading Further
 
-**Do not execute any step below.** Your only action is to spawn a Haiku subagent via the `Agent` tool with `model: haiku`. Embed all instructions under "Subagent Instructions" below verbatim as the subagent prompt, and include this instruction in the prompt: **"Use `AskUserQuestion` for any mid-task user interaction — slug confirmation, Context/Decision/Consequences field entry, and supersession selection."** `AskUserQuestion` is a standard Claude Code tool available to all subagents for synchronous mid-task user prompts. Report the subagent's result to the user without modification.
+**Do not execute any step below.** Your only action is to spawn a Haiku subagent via the `Agent` tool with `model: haiku`. Embed all instructions under "Subagent Instructions" below verbatim as the subagent prompt, and include this instruction in the prompt: **"Use `AskUserQuestion` for any mid-task user interaction — slug confirmation, Context/Decision/Consequences field entry, and supersession selection."** `AskUserQuestion` is a standard Claude Code tool available to all subagents for synchronous mid-task user prompts. **You MUST call `AskUserQuestion` for each of the following fields before proceeding: Slug, Context, Decision, Consequences. Do not infer acceptance from available context — each field requires an explicit user response.** **You MUST NOT write the ADR file or call `git commit` until the user has explicitly approved the full ADR via `AskUserQuestion`.** Report the subagent's result to the user without modification.
 
 ## 📋 Subagent Instructions — Pass Verbatim, Do Not Execute Directly
 
