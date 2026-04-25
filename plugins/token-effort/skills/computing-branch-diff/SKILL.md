@@ -5,23 +5,25 @@ description: Use when a subagent needs to know what changed on the current branc
 
 # Computing a Branch Diff
 
-## Dispatcher
+## ⛔ Dispatcher — Act on This Before Reading Further
 
-Delegate this skill's entire workflow to a Haiku subagent. Use the `Agent` tool with `model: haiku`. Embed all instructions below (Overview through Eval) verbatim as the subagent prompt — the script path in Step 1 is already hardcoded (Claude Code substitutes `CLAUDE_PLUGIN_ROOT` at plugin load time, so the path in Step 1 is correct as-shipped). This skill uniquely requires noting the resolved path because it delegates to a companion shell script; skills without external scripts omit this clause. Report the subagent's result to the user without modification.
+**Do not execute any step below.** Your only action is to spawn a Haiku subagent via the `Agent` tool with `model: haiku`. Embed all instructions under "Subagent Instructions" below verbatim as the subagent prompt — the script path in Step 1 is already hardcoded (Claude Code substitutes `CLAUDE_PLUGIN_ROOT` at plugin load time, so the path in Step 1 is correct as-shipped). This skill uniquely requires noting the resolved path because it delegates to a companion shell script; skills without external scripts omit this clause. Report the subagent's result to the user without modification.
 
-## Overview
+## 📋 Subagent Instructions — Pass Verbatim, Do Not Execute Directly
+
+### Overview
 
 Produces the merge-base, full diff, changed file list, and commit list for the current branch relative to its base. Delegates all logic to a script — one Bash call, no approval chain. Handles base-branch detection, upstream fallback, `LARGE_DIFF_FILE` offloading, and `STATUS=empty` for branches with no unique commits.
 
 This skill ships with two companion scripts — `branch-diff.sh` (Bash) and `branch-diff.ps1` (PowerShell) — which must be present in the same installed directory.
 
-## When NOT to Use
+### When NOT to Use
 
 - **Detached HEAD** — `git rev-parse --abbrev-ref HEAD` returns `HEAD`; base branch detection will likely fail with exit 1.
 - **Shallow clone** — merge-base computation may be incorrect or error; run `git fetch --unshallow` first.
 - **No remotes configured** — base branch detection steps 2 and 3 require `origin`; if absent, exit 1 is expected.
 
-## Steps
+### Steps
 
 ### 1. Determine the script path
 
@@ -88,7 +90,7 @@ When `STATUS=empty`, report: "No commits on this branch relative to `$BASE`. Dif
 
 When `LARGE_DIFF_FILE=...` appears, report the path — do not inline the diff.
 
-## Common Mistakes
+### Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
@@ -96,7 +98,7 @@ When `LARGE_DIFF_FILE=...` appears, report the path — do not inline the diff.
 | Using `$0` to resolve `SKILL_DIR` inside a subagent | `$0` is unreliable in eval contexts; use `${CLAUDE_PLUGIN_ROOT}/skills/computing-branch-diff` |
 | Inlining the diff when `LARGE_DIFF_FILE` is set | Report the file path only; inlining can exceed context limits |
 
-## Eval
+### Eval
 
 **Scenario A — normal branch:** Subagent is on a feature branch with 3 commits ahead of `origin/main`.
 - [ ] `BASE` and `MERGE_BASE` are reported

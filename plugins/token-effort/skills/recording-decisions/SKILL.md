@@ -6,11 +6,13 @@ user-invocable: true
 
 # Recording Decisions
 
-## Dispatcher
+## ⛔ Dispatcher — Act on This Before Reading Further
 
-Delegate this skill's entire workflow to a Haiku subagent. Use the `Agent` tool with `model: haiku`. Embed all instructions below (Overview through Eval) verbatim as the subagent prompt, and include this instruction in the prompt: **"Use `AskUserQuestion` for any mid-task user interaction — slug confirmation, Context/Decision/Consequences field entry, and supersession selection."** `AskUserQuestion` is a standard Claude Code tool available to all subagents for synchronous mid-task user prompts. Report the subagent's result to the user without modification.
+**Do not execute any step below.** Your only action is to spawn a Haiku subagent via the `Agent` tool with `model: haiku`. Embed all instructions under "Subagent Instructions" below verbatim as the subagent prompt, and include this instruction in the prompt: **"Use `AskUserQuestion` for any mid-task user interaction — slug confirmation, Context/Decision/Consequences field entry, and supersession selection."** `AskUserQuestion` is a standard Claude Code tool available to all subagents for synchronous mid-task user prompts. Report the subagent's result to the user without modification.
 
-## Overview
+## 📋 Subagent Instructions — Pass Verbatim, Do Not Execute Directly
+
+### Overview
 
 Guides the user through creating an Architecture Decision Record (ADR) and commits
 it to `docs/decisions/`. When called from `/token-effort:building-gh-issue`, auto-populates fields from the
@@ -18,7 +20,7 @@ spec in context. When called standalone, prompts all fields interactively.
 
 **Usage:** `/token-effort:recording-decisions`
 
-## When to Use
+### When to Use
 
 **Use when:**
 - Phase 8 of `/token-effort:building-gh-issue` calls this skill after code review
@@ -27,7 +29,7 @@ spec in context. When called standalone, prompts all fields interactively.
 **Do not use when:**
 - The change is a pure bug fix or cosmetic update with no architectural implications
 
-## ADR File Format
+### ADR File Format
 
 **Location:** `docs/decisions/YYYY-MM-<slug>.md`
 **Naming:** YYYY = current year, MM = zero-padded current month (e.g. `04` for
@@ -59,9 +61,9 @@ If the ADR supersedes existing ADRs, the Status line reads:
 > **Status:** Supersedes [2025-11-use-sqlite-for-storage](2025-11-use-sqlite-for-storage.md), [...]
 ```
 
-## Process
+### Process
 
-### Phase 1 — Resolve owner/repo and current date
+#### Phase 1 — Resolve owner/repo and current date
 
 ```bash
 git remote get-url origin
@@ -76,7 +78,7 @@ date +%Y-%m-%d
 
 Extract `YYYY` (year) and `MM` (zero-padded month) for the filename prefix.
 
-### Phase 2 — Collect and confirm fields
+#### Phase 2 — Collect and confirm fields
 
 Present each field in order. When running inside `/token-effort:building-gh-issue`, auto-populate from the
 spec context. When standalone, prompt for all fields.
@@ -108,7 +110,7 @@ spec context. When standalone, prompt for all fields.
 - Same confirmation pattern as Context
 - Standalone: "Describe the trade-offs, known limitations, or anything that should inform future work:"
 
-### Phase 3 — Supersession check
+#### Phase 3 — Supersession check
 
 After all fields are confirmed:
 
@@ -153,17 +155,17 @@ If not found, warn and re-prompt — do not silently skip:
 
 6. **If none superseded:** Status = `Active`, no existing files modified.
 
-### Phase 4 — Create `docs/decisions/` if needed
+#### Phase 4 — Create `docs/decisions/` if needed
 
 ```bash
 mkdir -p docs/decisions
 ```
 
-### Phase 5 — Write the ADR file
+#### Phase 5 — Write the ADR file
 
 Assemble the ADR from confirmed fields and write to `docs/decisions/YYYY-MM-<slug>.md`.
 
-### Phase 6 — Commit
+#### Phase 6 — Commit
 
 ```bash
 git add docs/decisions/
@@ -172,7 +174,7 @@ git commit -m "docs: record decision YYYY-MM-<slug> (issue #N)"
 
 Report the committed file path to the user.
 
-## Common Mistakes
+### Common Mistakes
 
 - **Silently skipping unrecognised supersession filenames** — if the user types a
   filename not found in `docs/decisions/`, warn and re-prompt. Never silently skip.
@@ -185,7 +187,7 @@ Report the committed file path to the user.
 - **Wrong location for supersession note** — the `> ⚠️ Superseded by ...` line goes
   immediately after the `# YYYY-MM-<slug>` heading, before the blockquote metadata.
 
-## Eval
+### Eval
 
 - [ ] Resolved owner/repo from `git remote get-url origin`
 - [ ] Used current year and zero-padded month for filename prefix
