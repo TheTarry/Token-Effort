@@ -159,17 +159,56 @@ If not found, warn and re-prompt — do not silently skip:
 
 6. **If none superseded:** Status = `Active`, no existing files modified.
 
-#### Phase 4 — Create `docs/decisions/` if needed
+#### Phase 4 — Final approval gate
+
+Assemble the complete ADR text in memory using all confirmed fields from Phase 2 and the
+supersession outcome from Phase 3. Do **not** write any file yet.
+
+Present the full rendered ADR to the user via `AskUserQuestion`:
+
+````
+Here is the ADR that will be committed. Please review and reply `yes` to confirm, or describe any changes:
+
+---
+# YYYY-MM-<slug>
+
+> **Status:** Active  (or Supersedes ... if applicable)
+> **Issue:** [#N — Title](https://github.com/owner/repo/issues/N)
+> **Date:** YYYY-MM-DD
+
+## Context
+
+<confirmed context text>
+
+## Decision
+
+<confirmed decision text>
+
+## Consequences
+
+<confirmed consequences text>
+---
+````
+
+Wait for the user's response.
+
+- If the user replies `yes` (case-insensitive): proceed to Phase 5.
+- If the user requests changes: apply the requested changes, re-assemble the full ADR draft, and call
+  `AskUserQuestion` again with the revised draft. Repeat this loop until the user replies `yes`.
+
+**You MUST NOT write the ADR file, run `mkdir`, or call `git commit` until the user replies `yes`.**
+
+#### Phase 5 — Create `docs/decisions/` if needed
 
 ```bash
 mkdir -p docs/decisions
 ```
 
-#### Phase 5 — Write the ADR file
+#### Phase 6 — Write the ADR file
 
 Assemble the ADR from confirmed fields and write to `docs/decisions/YYYY-MM-<slug>.md`.
 
-#### Phase 6 — Commit
+#### Phase 7 — Commit
 
 ```bash
 git add docs/decisions/
