@@ -229,12 +229,24 @@ Report the committed file path to the user.
   same commit as the new ADR. Never commit only the new file.
 - **Wrong location for supersession note** — the `> ⚠️ Superseded by ...` line goes
   immediately after the `# YYYY-MM-<slug>` heading, before the blockquote metadata.
+- **Skipping `AskUserQuestion` when context is rich** — even when all fields are
+  auto-populated from spec context, each field MUST be confirmed via `AskUserQuestion`.
+  Available context is not a substitute for explicit user confirmation.
+- **Writing the file before final approval** — `AskUserQuestion` must be called with
+  the full rendered ADR before `mkdir` or any file write. Commit and file write happen
+  only after an explicit "yes".
 
 ### Eval
 
 - [ ] Resolved owner/repo from `git remote get-url origin`
 - [ ] Used current year and zero-padded month for filename prefix
-- [ ] Presented each field for confirmation with auto-population when in `/token-effort:building-gh-issue` context
+- [ ] Called `AskUserQuestion` for Slug confirmation and waited for user response
+- [ ] Called `AskUserQuestion` for Context confirmation and waited for user response
+- [ ] Called `AskUserQuestion` for Decision confirmation and waited for user response
+- [ ] Called `AskUserQuestion` for Consequences confirmation and waited for user response
+- [ ] Assembled full ADR draft and called `AskUserQuestion` for final approval before writing the file
+- [ ] Did not write the ADR file or call `git commit` before receiving explicit user approval
+- [ ] Looped back to show a revised draft when the user requested changes at the final gate
 - [ ] Prompted all fields interactively when called standalone
 - [ ] Scanned `docs/decisions/` for potentially related ADRs and presented shortlist
 - [ ] Verified existence of any user-supplied filenames before accepting them
