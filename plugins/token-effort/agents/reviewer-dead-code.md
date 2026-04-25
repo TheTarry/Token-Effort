@@ -80,7 +80,7 @@ When invoked:
 
 For each file under review, work through these checks in order (dynamic-use pre-check first, then cheap-before-expensive for remaining items):
 
-- [ ] **Dynamic-use pre-check**: Scan the file and any identifiable framework config for reflection patterns, DI annotations (`@Injectable`, `@Component`, `@Autowired`), event-listener registrations, or dynamic dispatch calls (`getattr`, `send`, `reflect`). If any are present, note this and downgrade all unused-symbol findings in this file to LOW. This pre-check gates the severity of: Unused imports, Unused definitions, Stale feature flags, and Orphaned exports.
+- [ ] **Dynamic-use pre-check**: Scan the file and any identifiable framework config for reflection patterns, DI annotations (`@Injectable`, `@Component`, `@Autowired`), event-listener registrations, dynamic dispatch calls (`getattr`, `send`, `reflect`), or bracket-notation property access (e.g. `obj['method']()`, `handlers['fn']()`). If any are present, note this and downgrade all unused-symbol findings in this file to LOW. This pre-check gates the severity of: Unused imports, Unused definitions, Stale feature flags, and Orphaned exports.
 - [ ] **Post-control-flow code**: Does any code appear after an unconditional `return`, `throw`, `break`, or `continue` on a branch that always executes?
 - [ ] **Impossible conditions**: Are there `if`, `while`, or `switch` conditions that resolve to a constant (always true or always false)?
 - [ ] **Unused imports**: Are all imported or required symbols referenced at least once in the file body? (Symbols that appear only in `export { ... }` or `export * from` re-exports are not unused — see Anti-Patterns.)
@@ -96,6 +96,8 @@ Every review uses this structured schema:
 
 ````
 VERDICT: PASS | NEEDS_CHANGES | BLOCK | SKIP
+
+(When VERDICT is PASS: include only the Positive Elements section. Omit Dead Code Findings and Summary Table sections entirely.)
 
 (When VERDICT is SKIP: include only the Skipped Files section below. Omit all other sections.)
 
