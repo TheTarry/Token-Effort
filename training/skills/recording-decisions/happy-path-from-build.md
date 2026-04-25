@@ -8,7 +8,12 @@ The skill auto-populates Context, Decision, and Consequences from the spec.
 It presents each field for confirmation, then writes and commits the ADR file.
 
 ## Pass Criteria
-- [ ] Prompts for confirmation of each field (does not silently accept without showing)
+- [ ] Called `AskUserQuestion` for Slug confirmation even though spec context was available
+- [ ] Called `AskUserQuestion` for Context confirmation even though spec context was available
+- [ ] Called `AskUserQuestion` for Decision confirmation even though spec context was available
+- [ ] Called `AskUserQuestion` for Consequences confirmation even though spec context was available
+- [ ] Called `AskUserQuestion` with full rendered ADR before writing any file
+- [ ] No file written and no `git commit` run before user replied `yes`
 - [ ] Creates file at `docs/decisions/YYYY-MM-<slug>.md` using current year + zero-padded month
 - [ ] Status line is `Active` (no supersession)
 - [ ] Issue link in ADR points to `https://github.com/<owner>/<repo>/issues/49`
