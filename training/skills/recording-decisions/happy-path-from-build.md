@@ -1,11 +1,12 @@
 ## Scenario
-The skill is invoked from Phase 9 of `/build` for issue #49. The spec context
+The skill is invoked from Phase 8 of `/token-effort:building-gh-issue` for issue #49. The spec context
 contains a "Context" section, a "Decision" section, and a "Consequences" section.
 The `docs/decisions/` directory already exists and is empty.
 
 ## Expected Behavior
 The skill auto-populates Context, Decision, and Consequences from the spec.
-It presents each field for confirmation, then writes and commits the ADR file.
+It calls `AskUserQuestion` to confirm each field, then presents the full rendered ADR
+for final approval before writing and committing the file.
 
 ## Pass Criteria
 - [ ] Called `AskUserQuestion` for Slug confirmation even though spec context was available

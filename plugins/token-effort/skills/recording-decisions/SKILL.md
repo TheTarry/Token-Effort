@@ -193,8 +193,9 @@ Here is the ADR that will be committed. Please review and reply `yes` to confirm
 Wait for the user's response.
 
 - If the user replies `yes` (case-insensitive): proceed to Phase 5.
-- If the user requests changes: apply the requested changes, re-assemble the full ADR draft, and call
-  `AskUserQuestion` again with the revised draft. Repeat this loop until the user replies `yes`.
+- Any response other than `yes` (case-insensitive) is treated as a change request. Apply the requested
+  changes, re-assemble the full ADR draft, and call `AskUserQuestion` again with the revised draft.
+  There is no iteration limit — repeat until the user replies `yes`.
 
 **You MUST NOT write the ADR file, run `mkdir`, or call `git commit` until the user replies `yes`.**
 
@@ -235,6 +236,9 @@ Report the committed file path to the user.
 - **Writing the file before final approval** — `AskUserQuestion` must be called with
   the full rendered ADR before `mkdir` or any file write. Commit and file write happen
   only after an explicit "yes".
+- **Treating ambiguous affirmatives as approval** — only `yes` (case-insensitive) exits
+  the Phase 4 approval loop. Responses like `looks good`, `ok`, or `fine` are change
+  requests, not approvals — apply them and re-present the draft.
 
 ### Eval
 
