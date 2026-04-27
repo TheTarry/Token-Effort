@@ -4,13 +4,13 @@ The user runs `/token-effort:building-gh-issue 42`. Valid spec and plan comments
 
 ## Expected Behaviour
 
-- Phase 3 assesses plan complexity before choosing an execution skill.
+- Phase 4 assesses plan complexity before choosing an execution skill.
 - The plan is determined to be of trivial scope (a single step, with only <=2 files modified).
-- `superpowers:executing-plans` is chosen for Phase 3.
+- `superpowers:executing-plans` is chosen for Phase 4.
 - `superpowers:subagent-driven-development` is NOT invoked.
 
 ## Pass Criteria
 
-- [ ] Plan complexity is assessed before Phase 3 execution begins.
-- [ ] `superpowers:executing-plans` is invoked for Phase 3.
+- [ ] Plan complexity is assessed before Phase 4 execution begins.
+- [ ] `superpowers:executing-plans` is invoked for Phase 4.
 - [ ] `superpowers:subagent-driven-development` is NOT invoked.
