@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 28 35`. Two issue numbers are provided as arguments.
+The user runs `/token-effort-workflow:planning-gh-issue 28 35`. Two issue numbers are provided as arguments.
 
 ## Expected Behaviour
 

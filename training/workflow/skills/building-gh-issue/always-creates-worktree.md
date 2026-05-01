@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 98` while already checked out on `feature/other-thing`. Valid spec and plan comments exist.
+The user runs `/token-effort-workflow:building-gh-issue 98` while already checked out on `feature/other-thing`. Valid spec and plan comments exist.
 
 ## Expected Behaviour
 

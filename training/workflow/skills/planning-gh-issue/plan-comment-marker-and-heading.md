@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 33`. After the user approves the plan, Phase 4 posts the plan as a GitHub comment.
+The user runs `/token-effort-workflow:planning-gh-issue 33`. After the user approves the plan, Phase 4 posts the plan as a GitHub comment.
 
 ## Expected Behaviour
 

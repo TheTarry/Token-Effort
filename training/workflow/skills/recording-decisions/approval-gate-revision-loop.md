@@ -1,6 +1,6 @@
 ## Scenario
 
-The user invokes `/token-effort:recording-decisions` standalone. After all fields are
+The user invokes `/token-effort-workflow:recording-decisions` standalone. After all fields are
 collected and Phase 3 completes, the skill presents the full rendered ADR. The user replies
 `change the Consequences section to mention migration cost`. The skill applies the change
 and presents the revised ADR again. The user replies `yes`.

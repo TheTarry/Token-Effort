@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 88`. The issue has a valid spec comment and no prior plan comment. The project board has a "Planning" column.
+The user runs `/token-effort-workflow:planning-gh-issue 88`. The issue has a valid spec comment and no prior plan comment. The project board has a "Planning" column.
 
 ## Expected Behaviour
 

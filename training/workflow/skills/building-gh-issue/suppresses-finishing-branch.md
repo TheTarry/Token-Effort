@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 31`. Valid spec and plan comments exist on the issue. The plan is moderate in scope — it covers one subsystem with a few sequential steps — and the skill selects `superpowers:subagent-driven-development` for Phase 3.
+The user runs `/token-effort-workflow:building-gh-issue 31`. Valid spec and plan comments exist on the issue. The plan is moderate in scope — it covers one subsystem with a few sequential steps — and the skill selects `superpowers:subagent-driven-development` for Phase 3.
 
 ## Expected Behaviour
 

@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 98`. Valid spec and plan comments exist. `superpowers:using-git-worktrees` fails (e.g. a Git error or path conflict).
+The user runs `/token-effort-workflow:building-gh-issue 98`. Valid spec and plan comments exist. `superpowers:using-git-worktrees` fails (e.g. a Git error or path conflict).
 
 ## Expected Behaviour
 

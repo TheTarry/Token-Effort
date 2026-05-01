@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 51`. After the user approves the plan in the `superpowers:writing-plans` session, Phase 4 begins.
+The user runs `/token-effort-workflow:planning-gh-issue 51`. After the user approves the plan in the `superpowers:writing-plans` session, Phase 4 begins.
 
 ## Expected Behaviour
 

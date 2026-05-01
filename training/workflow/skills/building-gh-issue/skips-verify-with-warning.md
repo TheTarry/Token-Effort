@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 44`. Valid spec and plan comments exist and the plan executes successfully through Phase 4. In Phase 5, the skill attempts to invoke `/verify`, but the skill is not available in this project.
+The user runs `/token-effort-workflow:building-gh-issue 44`. Valid spec and plan comments exist and the plan executes successfully through Phase 4. In Phase 5, the skill attempts to invoke `/verify`, but the skill is not available in this project.
 
 ## Expected Behaviour
 

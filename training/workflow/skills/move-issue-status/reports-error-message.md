@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:move-issue-status 99 "Done"`. The Python script returns:
+The user runs `/token-effort-workflow:move-issue-status 99 "Done"`. The Python script returns:
 
 ```json
 {"status": "error", "message": "Issue #99 not found on any project board"}

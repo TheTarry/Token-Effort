@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 55`. Issue #55 has title "Add retry logic to the API client — handles 5xx errors". Valid spec and plan comments exist.
+The user runs `/token-effort-workflow:building-gh-issue 55`. Issue #55 has title "Add retry logic to the API client — handles 5xx errors". Valid spec and plan comments exist.
 
 ## Expected Behaviour
 

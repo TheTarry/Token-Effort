@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 98` while `main` is checked out. Issue #98 has valid spec and plan comments.
+The user runs `/token-effort-workflow:building-gh-issue 98` while `main` is checked out. Issue #98 has valid spec and plan comments.
 
 ## Expected Behaviour
 

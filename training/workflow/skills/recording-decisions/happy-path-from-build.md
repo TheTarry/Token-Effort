@@ -1,5 +1,5 @@
 ## Scenario
-The skill is invoked from Phase 8 of `/token-effort:building-gh-issue` for issue #49. The spec context
+The skill is invoked from Phase 8 of `/token-effort-workflow:building-gh-issue` for issue #49. The spec context
 contains a "Context" section, a "Decision" section, and a "Consequences" section.
 The `docs/decisions/` directory already exists and is empty.
 

@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 22`. The issue has both a valid spec comment and a plan comment starting with `<!-- token-effort:planning-gh-issue -->` followed by the plan body content.
+The user runs `/token-effort-workflow:building-gh-issue 22`. The issue has both a valid spec comment and a plan comment starting with `<!-- token-effort:planning-gh-issue -->` followed by the plan body content.
 
 ## Expected Behaviour
 

@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:move-issue-status 15 "Planning"` (explicit mode — a target status is provided).
+The user runs `/token-effort-workflow:move-issue-status 15 "Planning"` (explicit mode — a target status is provided).
 
 ## Expected Behavior
 

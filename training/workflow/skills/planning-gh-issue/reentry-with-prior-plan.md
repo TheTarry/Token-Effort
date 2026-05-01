@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 44`. The issue has both a spec comment (`<!-- brainstorming-gh-issue:spec -->`) and a prior plan comment (`<!-- token-effort:planning-gh-issue -->`). The `pending-review` label is currently applied.
+The user runs `/token-effort-workflow:planning-gh-issue 44`. The issue has both a spec comment (`<!-- brainstorming-gh-issue:spec -->`) and a prior plan comment (`<!-- token-effort:planning-gh-issue -->`). The `pending-review` label is currently applied.
 
 ## Expected Behaviour
 

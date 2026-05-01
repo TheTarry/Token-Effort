@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 77`. MCP GitHub tools are available in the session. The issue has a valid spec comment.
+The user runs `/token-effort-workflow:planning-gh-issue 77`. MCP GitHub tools are available in the session. The issue has a valid spec comment.
 
 ## Expected Behaviour
 

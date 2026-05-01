@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:move-issue-status 42`. The skill must locate the Python script before invoking it.
+The user runs `/token-effort-workflow:move-issue-status 42`. The skill must locate the Python script before invoking it.
 
 ## Expected Behavior
 

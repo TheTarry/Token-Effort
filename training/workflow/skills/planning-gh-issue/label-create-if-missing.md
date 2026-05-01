@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 61`. After plan approval, Phase 4 runs. The `pending-review` label does NOT exist on the repository.
+The user runs `/token-effort-workflow:planning-gh-issue 61`. After plan approval, Phase 4 runs. The `pending-review` label does NOT exist on the repository.
 
 ## Expected Behaviour
 

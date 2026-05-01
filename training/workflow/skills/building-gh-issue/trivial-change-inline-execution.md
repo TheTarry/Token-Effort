@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 42`. Valid spec and plan comments exist. The plan is composed of a single step - modifying 2 files only.
+The user runs `/token-effort-workflow:building-gh-issue 42`. Valid spec and plan comments exist. The plan is composed of a single step - modifying 2 files only.
 
 ## Expected Behaviour
 

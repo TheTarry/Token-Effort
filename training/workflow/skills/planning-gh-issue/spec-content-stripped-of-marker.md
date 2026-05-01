@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 99`. The issue has a spec comment whose first line is `<!-- brainstorming-gh-issue:spec -->` followed by the spec body content.
+The user runs `/token-effort-workflow:planning-gh-issue 99`. The issue has a spec comment whose first line is `<!-- brainstorming-gh-issue:spec -->` followed by the spec body content.
 
 ## Expected Behaviour
 

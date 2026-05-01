@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 22`. The issue has a valid spec comment. The planning session begins and `superpowers:writing-plans` produces a draft plan, but the user has not yet approved it.
+The user runs `/token-effort-workflow:planning-gh-issue 22`. The issue has a valid spec comment. The planning session begins and `superpowers:writing-plans` produces a draft plan, but the user has not yet approved it.
 
 ## Expected Behaviour
 

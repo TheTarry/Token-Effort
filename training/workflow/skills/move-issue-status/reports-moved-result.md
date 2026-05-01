@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:move-issue-status 15 "Planning"`. The Python script returns:
+The user runs `/token-effort-workflow:move-issue-status 15 "Planning"`. The Python script returns:
 
 ```json
 {"status": "moved", "issue": 15, "to": "Planning", "project": "Token-Effort Board"}

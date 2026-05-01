@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 19`. The issue has a valid spec comment. When Phase 3 attempts to invoke `token-effort:move-issue-status 19 "Planning"`, the call fails because the "Planning" column does not exist on the project board yet.
+The user runs `/token-effort-workflow:planning-gh-issue 19`. The issue has a valid spec comment. When Phase 3 attempts to invoke `token-effort:move-issue-status 19 "Planning"`, the call fails because the "Planning" column does not exist on the project board yet.
 
 ## Expected Behaviour
 

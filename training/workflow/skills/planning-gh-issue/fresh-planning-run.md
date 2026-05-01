@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 30`. The issue has a spec comment starting with `<!-- brainstorming-gh-issue:spec -->` but no prior plan comment starting with `<!-- token-effort:planning-gh-issue -->`.
+The user runs `/token-effort-workflow:planning-gh-issue 30`. The issue has a spec comment starting with `<!-- brainstorming-gh-issue:spec -->` but no prior plan comment starting with `<!-- token-effort:planning-gh-issue -->`.
 
 ## Expected Behaviour
 

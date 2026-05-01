@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 55`. Valid spec and plan comments exist. The plan covers 2 sequential steps — moderate scope, not explicitly designated large or complex.
+The user runs `/token-effort-workflow:building-gh-issue 55`. Valid spec and plan comments exist. The plan covers 2 sequential steps — moderate scope, not explicitly designated large or complex.
 
 ## Expected Behaviour
 

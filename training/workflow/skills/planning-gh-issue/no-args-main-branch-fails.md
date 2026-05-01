@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue` with no arguments. The current branch is `main`, which contains no digits.
+The user runs `/token-effort-workflow:planning-gh-issue` with no arguments. The current branch is `main`, which contains no digits.
 
 ## Expected Behaviour
 
@@ -13,4 +13,4 @@ The user runs `/token-effort:planning-gh-issue` with no arguments. The current b
 - [ ] `git branch --show-current` is called.
 - [ ] No integer is found in `main`.
 - [ ] Execution stops with an error (no fetch, no planning session).
-- [ ] The error message contains the suggested invocation `/token-effort:planning-gh-issue <N>`.
+- [ ] The error message contains the suggested invocation `/token-effort-workflow:planning-gh-issue <N>`.

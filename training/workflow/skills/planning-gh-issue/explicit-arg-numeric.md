@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue 28`. The issue has an approved spec comment starting with `<!-- brainstorming-gh-issue:spec -->` and no prior plan comment.
+The user runs `/token-effort-workflow:planning-gh-issue 28`. The issue has an approved spec comment starting with `<!-- brainstorming-gh-issue:spec -->` and no prior plan comment.
 
 ## Expected Behaviour
 

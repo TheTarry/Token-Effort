@@ -1,6 +1,6 @@
 ## Scenario
 
-The user invokes `/token-effort:recording-decisions` standalone. They fill in all fields
+The user invokes `/token-effort-workflow:recording-decisions` standalone. They fill in all fields
 (issue #55, slug `use-postgres-for-persistence`, short Context, Decision, and Consequences).
 After Phase 3 (no supersession), the skill presents the full rendered ADR and the user
 replies `yes`.

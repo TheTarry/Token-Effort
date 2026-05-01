@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:move-issue-status #7` (advance mode — no status argument, issue number has a leading `#`).
+The user runs `/token-effort-workflow:move-issue-status #7` (advance mode — no status argument, issue number has a leading `#`).
 
 ## Expected Behavior
 

@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:move-issue-status 22`. The Python script returns:
+The user runs `/token-effort-workflow:move-issue-status 22`. The Python script returns:
 
 ```json
 {"status": "skipped"}

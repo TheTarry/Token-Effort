@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:building-gh-issue 22`. The issue has a valid spec comment whose first line is `<!-- brainstorming-gh-issue:spec -->` followed by the full spec body, and a valid plan comment whose first line is `<!-- token-effort:planning-gh-issue -->` followed by the plan body. The issue is on a project board.
+The user runs `/token-effort-workflow:building-gh-issue 22`. The issue has a valid spec comment whose first line is `<!-- brainstorming-gh-issue:spec -->` followed by the full spec body, and a valid plan comment whose first line is `<!-- token-effort:planning-gh-issue -->` followed by the plan body. The issue is on a project board.
 
 ## Expected Behaviour
 

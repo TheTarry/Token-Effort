@@ -1,6 +1,6 @@
 ## Scenario
 
-The user runs `/token-effort:planning-gh-issue` with no arguments. The current branch is `67-extract-plan-phase`. The issue has an approved spec comment.
+The user runs `/token-effort-workflow:planning-gh-issue` with no arguments. The current branch is `67-extract-plan-phase`. The issue has an approved spec comment.
 
 ## Expected Behaviour
 
