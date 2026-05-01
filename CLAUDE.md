@@ -135,7 +135,7 @@ initialPrompt: "REQUIRED SETUP — ..."
 3. Score mutated version; keep if improved.
 4. Human gates every 5 cycles or on perfect score.
 
-Eval files live in `training/skills/<name>/` and `training/agents/<name>/`. Format:
+Eval files live in `training/<plugin>/<type>/<name>/` (e.g. `training/workflow/skills/brainstorming-gh-issue/`). Format:
 
 ```markdown
 ## Scenario
