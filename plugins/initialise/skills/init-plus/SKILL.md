@@ -9,7 +9,7 @@ user-invocable: true
 ## Overview
 Presents a numbered menu of six repo setup steps. The user selects which steps to run (by number or "all"), and the skill executes them in fixed order 1→6. Each step handles overwrite detection and asks before replacing existing files.
 
-**Usage:** `/token-effort:init-plus`
+**Usage:** `/token-effort-initialise:init-plus`
 
 Step 5 (Dependabot) is delegated entirely to `token-effort:configuring-dependabot`.
 
@@ -20,7 +20,7 @@ Step 5 (Dependabot) is delegated entirely to `token-effort:configuring-dependabo
 - Adding one or more standard files to an existing repository
 
 **Do not use when:**
-- You only want to configure Dependabot — run `/token-effort:configuring-dependabot` directly instead
+- You only want to configure Dependabot — run `/token-effort-initialise:configuring-dependabot` directly instead
 
 ## Prerequisites
 <!-- The version tag in the github-setup.md URLs below is updated automatically by release.yml at publish time. Do not change it manually. -->
@@ -91,7 +91,7 @@ Print:
 Ask:
 > "Is everything in [docs/github-setup.md](https://github.com/HeadlessTarry/Token-Effort/blob/v0.8.1/docs/github-setup.md) configured? [yes/no/skip]"
 
-If the user says no or skips, print: "> Complete the setup in [docs/github-setup.md](https://github.com/HeadlessTarry/Token-Effort/blob/v0.8.1/docs/github-setup.md), then re-run `/token-effort:init-plus` and select Step 3 to continue." Note "Triage workflow: skipped (prerequisites not met)" in the summary and continue to Step 4.
+If the user says no or skips, print: "> Complete the setup in [docs/github-setup.md](https://github.com/HeadlessTarry/Token-Effort/blob/v0.8.1/docs/github-setup.md), then re-run `/token-effort-initialise:init-plus` and select Step 3 to continue." Note "Triage workflow: skipped (prerequisites not met)" in the summary and continue to Step 4.
 If `.github/workflows/triaging-gh-issues.yml` exists:
 > "`.github/workflows/triaging-gh-issues.yml` already exists. Overwrite? [yes/no]"
 

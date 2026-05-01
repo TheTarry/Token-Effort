@@ -10,7 +10,7 @@ user-invocable: true
 
 Fetches a GitHub issue and its approved design spec, moves the issue to **Planning** status, then invokes `superpowers:writing-plans` to run an interactive planning session. After the user approves the plan, posts it as a comment on the issue and applies the `pending-review` label.
 
-**Usage:** `/token-effort:planning-gh-issue [<issue-number>]`
+**Usage:** `/token-effort-workflow:planning-gh-issue [<issue-number>]`
 
 ## ⚙️ When to Use
 
@@ -19,7 +19,7 @@ Fetches a GitHub issue and its approved design spec, moves the issue to **Planni
 - You want to continue refining a previously written plan (re-entry mode)
 
 **Do not use when:**
-- The issue does not yet have a design spec comment — run `/token-effort:brainstorming-gh-issue <N>` first and get the spec approved
+- The issue does not yet have a design spec comment — run `/token-effort-workflow:brainstorming-gh-issue <N>` first and get the spec approved
 - You want to plan something not tied to a GitHub issue — use `superpowers:writing-plans` directly instead
 
 ## Prerequisites
@@ -60,7 +60,7 @@ Extract the **first** sequence of digits from the branch name. Examples:
 
 **If no issue number can be determined** (no args, and no digits in the branch name), stop with:
 
-> "No issue number found in args or branch name. Run as `/token-effort:planning-gh-issue <N>`."
+> "No issue number found in args or branch name. Run as `/token-effort-workflow:planning-gh-issue <N>`."
 
 ### Phase 2 — Fetch context and detect state
 
@@ -74,7 +74,7 @@ This returns a JSON object with `number`, `title`, `body`, `comments` (array of 
 
 **Validate spec exists:** Search all entries in the `comments` array for one whose `body` starts with the marker `<!-- brainstorming-gh-issue:spec -->`. If no such comment is found, stop with:
 
-> "No design spec found on issue #N. Please run `/token-effort:brainstorming-gh-issue #N` first and get the spec approved before planning."
+> "No design spec found on issue #N. Please run `/token-effort-workflow:brainstorming-gh-issue #N` first and get the spec approved before planning."
 
 **Extract spec content:** Strip the `<!-- brainstorming-gh-issue:spec -->` marker line from the comment body. The remaining content is the spec context used in Phase 3.
 
@@ -189,7 +189,7 @@ After Phase 4 completes, report:
 ## Common Mistakes
 
 - **Using MCP tools for issue operations** — all issue interactions must use `gh` CLI commands. Never call any `mcp__plugin_github_github__*` tool, even if it is available.
-- **Proceeding without a spec comment** — if `<!-- brainstorming-gh-issue:spec -->` is not found in the issue comments, abort immediately with the message to run `/token-effort:brainstorming-gh-issue #N` first. Do not start a planning session without an approved spec.
+- **Proceeding without a spec comment** — if `<!-- brainstorming-gh-issue:spec -->` is not found in the issue comments, abort immediately with the message to run `/token-effort-workflow:brainstorming-gh-issue #N` first. Do not start a planning session without an approved spec.
 - **Blocking on the Planning status move failure** — `token-effort:move-issue-status` errors are non-fatal. Log the warning and continue. Never stop planning because of a status update failure.
 - **Posting the plan before the user approves it** — Phase 4 must not run until the user has explicitly approved the plan within the `superpowers:writing-plans` session. Do not call `gh issue comment` or `gh issue edit` during Phase 3.
 - **Not reading the plan file before posting** — always locate and read the file that writing-plans wrote with `ls -t ~/.claude/plans/*.md | head -1`. Do not reconstruct the plan content from memory.
@@ -205,7 +205,7 @@ After Phase 4 completes, report:
 
 - [ ] Resolved a single issue number from args (with or without `#` prefix) without calling `git branch --show-current`
 - [ ] When no args given: called `git branch --show-current` and extracted the first integer from the branch name
-- [ ] When no args given and branch has no digits: stopped with a message containing the suggested invocation `/token-effort:planning-gh-issue <N>`
+- [ ] When no args given and branch has no digits: stopped with a message containing the suggested invocation `/token-effort-workflow:planning-gh-issue <N>`
 - [ ] When multiple issue numbers given as args: asked the user to choose one before fetching any issue
 - [ ] Fetched the issue with `gh issue view --json number,title,body,comments,labels`
 - [ ] Searched comments for `<!-- brainstorming-gh-issue:spec -->` marker

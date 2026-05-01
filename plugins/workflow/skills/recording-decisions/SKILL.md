@@ -1,6 +1,6 @@
 ---
 name: recording-decisions
-description: Use when committing an Architecture Decision Record (ADR) to docs/decisions/ — guides through Context, Decision, and Consequences fields with supersession support. Called from /token-effort:building-gh-issue Phase 8 with spec context pre-populated; can also be run standalone.
+description: Use when committing an Architecture Decision Record (ADR) to docs/decisions/ — guides through Context, Decision, and Consequences fields with supersession support. Called from /token-effort-workflow:building-gh-issue Phase 8 with spec context pre-populated; can also be run standalone.
 user-invocable: true
 ---
 
@@ -15,15 +15,15 @@ user-invocable: true
 ### Overview
 
 Guides the user through creating an Architecture Decision Record (ADR) and commits
-it to `docs/decisions/`. When called from `/token-effort:building-gh-issue`, auto-populates fields from the
+it to `docs/decisions/`. When called from `/token-effort-workflow:building-gh-issue`, auto-populates fields from the
 spec in context. When called standalone, prompts all fields interactively.
 
-**Usage:** `/token-effort:recording-decisions`
+**Usage:** `/token-effort-workflow:recording-decisions`
 
 ### When to Use
 
 **Use when:**
-- Phase 8 of `/token-effort:building-gh-issue` calls this skill after code review
+- Phase 8 of `/token-effort-workflow:building-gh-issue` calls this skill after code review
 - You want to capture an architectural decision as an in-repo record
 
 **Do not use when:**
@@ -80,16 +80,16 @@ Extract `YYYY` (year) and `MM` (zero-padded month) for the filename prefix.
 
 #### Phase 2 — Collect and confirm fields
 
-Present each field in order. When running inside `/token-effort:building-gh-issue`, auto-populate from the
+Present each field in order. When running inside `/token-effort-workflow:building-gh-issue`, auto-populate from the
 spec context. When standalone, prompt for all fields.
 
 **1. Issue number and title**
-- `/token-effort:building-gh-issue` context: read issue number and title from context
+- `/token-effort-workflow:building-gh-issue` context: read issue number and title from context
 - Standalone: call `AskUserQuestion` with the prompt `What is the GitHub issue number for this decision? (e.g. 42)`
 - Construct the full URL: `https://github.com/<owner>/<repo>/issues/<N>`
 
 **2. Slug**
-- `/token-effort:building-gh-issue` context: derive slug from the spec headline
+- `/token-effort-workflow:building-gh-issue` context: derive slug from the spec headline
 - Standalone with issue number: fetch title via `gh issue view <N> --json title -q .title`, then derive slug from that title
 - Standalone without issue: call `AskUserQuestion` with the prompt `Provide a short description to derive the slug from:`
 - Call `AskUserQuestion` with the prompt `Slug — accept or provide a replacement:` and the pre-populated value
@@ -97,19 +97,19 @@ spec context. When standalone, prompt for all fields.
 - Confirmed slug is used as the filename suffix.
 
 **3. Context**
-- `/token-effort:building-gh-issue`: auto-populate from the spec's Context / problem statement section
+- `/token-effort-workflow:building-gh-issue`: auto-populate from the spec's Context / problem statement section
 - Call `AskUserQuestion` with the prompt `Context — accept or provide a replacement:` and the pre-populated text shown
   in the message body. Wait for the user's response before continuing.
 - Standalone: call `AskUserQuestion` with the prompt `Describe what problem prompted this decision:`
 
 **4. Decision**
-- `/token-effort:building-gh-issue`: auto-populate from the spec's recommended approach section
+- `/token-effort-workflow:building-gh-issue`: auto-populate from the spec's recommended approach section
 - Call `AskUserQuestion` with the prompt `Decision — accept or provide a replacement:` and the pre-populated text shown
   in the message body. Wait for the user's response before continuing.
 - Standalone: call `AskUserQuestion` with the prompt `Describe what was decided and why:`
 
 **5. Consequences**
-- `/token-effort:building-gh-issue`: auto-populate from the spec's trade-offs / limitations section
+- `/token-effort-workflow:building-gh-issue`: auto-populate from the spec's trade-offs / limitations section
 - Call `AskUserQuestion` with the prompt `Consequences — accept or provide a replacement:` and the pre-populated text
   shown in the message body. Wait for the user's response before continuing.
 - Standalone: call `AskUserQuestion` with the prompt `Describe the trade-offs, known limitations, or anything that should inform future work:`

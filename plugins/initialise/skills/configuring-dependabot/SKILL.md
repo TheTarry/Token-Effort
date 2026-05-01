@@ -16,7 +16,7 @@ user-invocable: true
 
 Scans the repository for package ecosystem indicators and writes `.github/dependabot.yml` with one entry per detected ecosystem. All entries use a weekly schedule; cooldown settings are included only for ecosystems that support them.
 
-**Usage:** `/token-effort:configuring-dependabot`
+**Usage:** `/token-effort-initialise:configuring-dependabot`
 
 Reference: https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
 
@@ -24,7 +24,7 @@ Reference: https://docs.github.com/en/code-security/reference/supply-chain-secur
 
 **Use when:**
 - You want to add or update Dependabot for a repository
-- Invoked by `/token-effort:init-plus` Step 5
+- Invoked by `/token-effort-initialise:init-plus` Step 5
 
 **Do not use when:**
 - You only want to inspect which ecosystems are present without writing a file

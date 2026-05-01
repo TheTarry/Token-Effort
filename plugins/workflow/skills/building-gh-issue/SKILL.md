@@ -10,7 +10,7 @@ user-invocable: true
 
 Implements a GitHub issue end-to-end: fetches the issue, its approved design spec, and its approved implementation plan, moves the issue to "Building" status, executes the plan, verifies and reviews the result, and opens a pull request. The pull request is created exactly once, at the final phase.
 
-**Usage:** `/token-effort:building-gh-issue <issue-number>`
+**Usage:** `/token-effort-workflow:building-gh-issue <issue-number>`
 
 Strip any leading `#` from the issue number before use (e.g. `#42` → `42`).
 
@@ -21,8 +21,8 @@ Strip any leading `#` from the issue number before use (e.g. `#42` → `42`).
 - You want a structured, end-to-end build workflow from plan to merged PR
 
 **Do not use when:**
-- The issue does not yet have a design spec comment — run `/token-effort:brainstorming-gh-issue <N>` first and get the spec approved
-- The issue does not yet have an implementation plan comment — run `/token-effort:planning-gh-issue <N>` first and get the plan approved
+- The issue does not yet have a design spec comment — run `/token-effort-workflow:brainstorming-gh-issue <N>` first and get the spec approved
+- The issue does not yet have an implementation plan comment — run `/token-effort-workflow:planning-gh-issue <N>` first and get the plan approved
 - Implementation is already underway on a branch — join that branch directly instead
 
 ## Prerequisites
@@ -52,7 +52,7 @@ gh issue view <N> --json number,title,body,comments,labels
 
 **If no spec comment is found:** Stop immediately with the error:
 
-> "Issue #N does not have a design spec comment. Run `/token-effort:brainstorming-gh-issue <N>` to generate one, then get it approved before building."
+> "Issue #N does not have a design spec comment. Run `/token-effort-workflow:brainstorming-gh-issue <N>` to generate one, then get it approved before building."
 
 **If found:** Extract the spec body — the full comment content **after** stripping the `<!-- brainstorming-gh-issue:spec -->` marker line.
 
@@ -60,7 +60,7 @@ gh issue view <N> --json number,title,body,comments,labels
 
 **If no plan comment is found:** Stop immediately with the error:
 
-> "Issue #N does not have an implementation plan comment. Run `/token-effort:planning-gh-issue <N>` to generate one, then get it approved before building."
+> "Issue #N does not have an implementation plan comment. Run `/token-effort-workflow:planning-gh-issue <N>` to generate one, then get it approved before building."
 
 **If found:** Extract the plan body — the full comment content **after** stripping the `<!-- token-effort:planning-gh-issue -->` marker line. This is the plan used for execution in Phase 4.
 
@@ -176,7 +176,7 @@ This step creates the pull request. It runs exactly once, here, at the end of th
 ## Common Mistakes
 
 - **Blocking on Phase 2 failure** — `move-issue-status` errors are non-fatal. Log the warning and continue. Never stop the build because of a status update failure.
-- **Proceeding without a plan comment** — if `<!-- token-effort:planning-gh-issue -->` is not found in the issue, abort immediately with the message to run `/token-effort:planning-gh-issue #N` first. Do not proceed to execution without an approved plan.
+- **Proceeding without a plan comment** — if `<!-- token-effort:planning-gh-issue -->` is not found in the issue, abort immediately with the message to run `/token-effort-workflow:planning-gh-issue #N` first. Do not proceed to execution without an approved plan.
 - **Omitting the suppression instruction from the Phase 4 prompt** — the verbatim instruction `"Do not invoke finishing-a-development-branch — this will be handled by the calling skill after all review steps complete."` must be included in the execution skill invocation. Paraphrasing it or omitting it is incorrect.
 - **Calling `finishing-a-development-branch` inside the Phase 4 execution skill** — the PR creation step belongs at Phase 10 and only there. The suppression instruction in Phase 4 enforces this; do not override it.
 - **Choosing `executing-plans` for non-trivial scope plans** — the default is `subagent-driven-development`. Only switch to `executing-plans` when all conditions (single-step plan, no more than 2 files touched) are met simultaneously.
