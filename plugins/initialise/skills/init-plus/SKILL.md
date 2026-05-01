@@ -11,7 +11,7 @@ Presents a numbered menu of six repo setup steps. The user selects which steps t
 
 **Usage:** `/token-effort-initialise:init-plus`
 
-Step 5 (Dependabot) is delegated entirely to `token-effort:configuring-dependabot`.
+Step 5 (Dependabot) is delegated entirely to `token-effort-initialise:configuring-dependabot`.
 
 ## When to Use
 
@@ -25,7 +25,7 @@ Step 5 (Dependabot) is delegated entirely to `token-effort:configuring-dependabo
 ## Prerequisites
 <!-- The version tag in the github-setup.md URLs below is updated automatically by release.yml at publish time. Do not change it manually. -->
 - For Step 3: a GitHub App and project board must be configured — see [docs/github-setup.md](https://github.com/HeadlessTarry/Token-Effort/blob/v0.8.1/docs/github-setup.md)
-- For Step 5: the `token-effort:configuring-dependabot` skill must be installed
+- For Step 5: the `token-effort-initialise:configuring-dependabot` skill must be installed
 
 ## Process
 ### Phase 1 — Repo scan & menu presentation
@@ -134,7 +134,7 @@ jobs:
           plugin_marketplaces: https://github.com/HeadlessTarry/Token-Effort.git
           plugins: token-effort
           prompt: |
-            Use the `token-effort:triaging-gh-issues` skill with `--advance-status`.
+            Use the `token-effort-workflow:triaging-gh-issues` skill with `--advance-status`.
             Triage all open issues in this repository.
 
             Upon completion, write a brief markdown summary of your activity to the GitHub Actions step summary using: SUMMARY_FILE=$(printenv GITHUB_STEP_SUMMARY) && echo "**[Claude]** {Activity summary}" >> "$SUMMARY_FILE"
@@ -228,7 +228,7 @@ blank_issues_enabled: false
 ---
 
 **Step 5 — Dependabot config**
-Invoke: `token-effort:configuring-dependabot`
+Invoke: `token-effort-initialise:configuring-dependabot`
 Do not perform any Dependabot logic directly. The sub-skill handles all scanning, overwrite detection, and file writing.
 
 ---
@@ -302,7 +302,7 @@ No git commit is made. The user decides what to commit.
 - **Executing steps out of order** — always run in order 1→6 regardless of user input order.
 - **Blocking on Step 3 prerequisites** — if the user says prerequisites are not set up, note it in the summary and continue. Do not halt the skill.
 - **Blocking on Step 2 "no"** — if the user says the superpowers plugin is not installed, note it and continue. Do not halt.
-- **Performing Dependabot logic directly in Step 5** — always delegate to `token-effort:configuring-dependabot`. Do not scan ecosystems or write `dependabot.yml` yourself.
+- **Performing Dependabot logic directly in Step 5** — always delegate to `token-effort-initialise:configuring-dependabot`. Do not scan ecosystems or write `dependabot.yml` yourself.
 - **Writing `CLAUDE.md` directly in Step 1** — always delegate to `/init` via the Skill tool. Do not write the file directly or use a hardcoded template.
 - **Omitting skipped steps from the summary** — every selected step must appear in the summary, even if skipped or declined.
 - **Writing `/verify` when it already exists** — always check for `.claude/skills/verify/SKILL.md` first. If it exists, skip with the log message and do not overwrite.
@@ -327,7 +327,7 @@ No git commit is made. The user decides what to commit.
 - [ ] Step 3: Wrote workflow with exact content matching the template above
 - [ ] Step 4: Warned and confirmed before overwriting any existing template files
 - [ ] Step 4: Wrote all three template files with correct content
-- [ ] Step 5: Delegated to `token-effort:configuring-dependabot` via Skill tool
+- [ ] Step 5: Delegated to `token-effort-initialise:configuring-dependabot` via Skill tool
 - [ ] Step 5: Did not perform any Dependabot logic directly
 - [ ] Step 6: Checked for existing `.claude/skills/verify/SKILL.md` before proceeding
 - [ ] Step 6: Skipped with log message when `/verify` already exists; did not overwrite

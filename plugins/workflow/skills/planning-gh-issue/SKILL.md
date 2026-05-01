@@ -15,7 +15,7 @@ Fetches a GitHub issue and its approved design spec, moves the issue to **Planni
 ## ⚙️ When to Use
 
 **Use when:**
-- A GitHub issue has an approved design spec comment (produced by `token-effort:brainstorming-gh-issue`) and is ready to be planned
+- A GitHub issue has an approved design spec comment (produced by `token-effort-workflow:brainstorming-gh-issue`) and is ready to be planned
 - You want to continue refining a previously written plan (re-entry mode)
 
 **Do not use when:**
@@ -87,7 +87,7 @@ This returns a JSON object with `number`, `title`, `body`, `comments` (array of 
 
 **Move issue to Planning status:**
 
-Invoke `token-effort:move-issue-status <N> "Planning"`.
+Invoke `token-effort-workflow:move-issue-status <N> "Planning"`.
 
 If this fails for any reason (e.g. the issue is not on a project board, or the "Planning" column does not yet exist), **log a warning and continue**. This step is non-fatal — do not block the planning session on a status update failure.
 
@@ -190,7 +190,7 @@ After Phase 4 completes, report:
 
 - **Using MCP tools for issue operations** — all issue interactions must use `gh` CLI commands. Never call any `mcp__plugin_github_github__*` tool, even if it is available.
 - **Proceeding without a spec comment** — if `<!-- brainstorming-gh-issue:spec -->` is not found in the issue comments, abort immediately with the message to run `/token-effort-workflow:brainstorming-gh-issue #N` first. Do not start a planning session without an approved spec.
-- **Blocking on the Planning status move failure** — `token-effort:move-issue-status` errors are non-fatal. Log the warning and continue. Never stop planning because of a status update failure.
+- **Blocking on the Planning status move failure** — `token-effort-workflow:move-issue-status` errors are non-fatal. Log the warning and continue. Never stop planning because of a status update failure.
 - **Posting the plan before the user approves it** — Phase 4 must not run until the user has explicitly approved the plan within the `superpowers:writing-plans` session. Do not call `gh issue comment` or `gh issue edit` during Phase 3.
 - **Not reading the plan file before posting** — always locate and read the file that writing-plans wrote with `ls -t ~/.claude/plans/*.md | head -1`. Do not reconstruct the plan content from memory.
 - **Forgetting the HTML comment marker** — the plan comment must begin with `<!-- token-effort:planning-gh-issue -->` on its own line so future re-entry runs can locate it reliably.
@@ -213,7 +213,7 @@ After Phase 4 completes, report:
 - [ ] Extracted spec content with the marker line stripped
 - [ ] Identified the absence of `<!-- token-effort:planning-gh-issue -->` comment and proceeded as a fresh planning run
 - [ ] In re-entry mode: loaded prior plan content (marker stripped) into Phase 3 alongside issue context and spec
-- [ ] Invoked `token-effort:move-issue-status <N> "Planning"` before invoking writing-plans
+- [ ] Invoked `token-effort-workflow:move-issue-status <N> "Planning"` before invoking writing-plans
 - [ ] Phase 3 status-move failure logged as a warning and did not block the planning session
 - [ ] The Phase 3 handoff instructed writing-plans not to invoke execution skills after approval
 - [ ] The Phase 3 handoff instructed writing-plans not to make git commits

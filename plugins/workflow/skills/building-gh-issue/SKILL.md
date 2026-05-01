@@ -17,7 +17,7 @@ Strip any leading `#` from the issue number before use (e.g. `#42` → `42`).
 ## ⚙️ When to Use
 
 **Use when:**
-- A GitHub issue has both an approved design spec comment (produced by `token-effort:brainstorming-gh-issue`) and an approved implementation plan comment (produced by `token-effort:planning-gh-issue`) and is ready to be implemented
+- A GitHub issue has both an approved design spec comment (produced by `token-effort-workflow:brainstorming-gh-issue`) and an approved implementation plan comment (produced by `token-effort-workflow:planning-gh-issue`) and is ready to be implemented
 - You want a structured, end-to-end build workflow from plan to merged PR
 
 **Do not use when:**
@@ -28,8 +28,8 @@ Strip any leading `#` from the issue number before use (e.g. `#42` → `42`).
 ## Prerequisites
 
 - `gh` CLI must be authenticated and available in the session. All GitHub operations use `gh` commands via `Bash`. No MCP tools are used or required.
-- The issue must have a design spec comment whose body begins with `<!-- brainstorming-gh-issue:spec -->`, produced by `token-effort:brainstorming-gh-issue`.
-- The issue must have an implementation plan comment whose body begins with `<!-- token-effort:planning-gh-issue -->`, produced by `token-effort:planning-gh-issue`.
+- The issue must have a design spec comment whose body begins with `<!-- brainstorming-gh-issue:spec -->`, produced by `token-effort-workflow:brainstorming-gh-issue`.
+- The issue must have an implementation plan comment whose body begins with `<!-- token-effort:planning-gh-issue -->`, produced by `token-effort-workflow:planning-gh-issue`.
 - The following `superpowers` skills must be installed:
   - `superpowers:executing-plans`
   - `superpowers:subagent-driven-development`
@@ -66,7 +66,7 @@ gh issue view <N> --json number,title,body,comments,labels
 
 ### Phase 2 — Move issue to Building status
 
-Invoke: `token-effort:move-issue-status <N> "Building"`
+Invoke: `token-effort-workflow:move-issue-status <N> "Building"`
 
 If this fails for any reason (e.g. the issue is not on a project board, or the skill is unavailable), **log a warning and continue**. This phase is non-fatal — do not block the build on a status update failure.
 
@@ -139,7 +139,7 @@ Fix any issues found directly. Report a brief summary of changes made, or "No ch
 
 ### Phase 7 — Code review
 
-Invoke: `token-effort:reviewing-code-systematically`
+Invoke: `token-effort-workflow:reviewing-code-systematically`
 
 Address any `BLOCK` or `NEEDS_CHANGES` findings before continuing to Phase 8.
 
@@ -158,11 +158,11 @@ Fix any issues found directly. Report a brief summary of findings, or "No securi
 
 ### Phase 9 — Record decisions
 
-Invoke: `token-effort:recording-decisions`
+Invoke: `token-effort-workflow:recording-decisions`
 
 If the skill is not available, **stop immediately** with:
 
-> "❌ Phase 9 blocked: `token-effort:recording-decisions` skill is required but not available.
+> "❌ Phase 9 blocked: `token-effort-workflow:recording-decisions` skill is required but not available.
 >  Install the skill before continuing the build."
 
 Do not proceed to Phase 10 until this phase completes successfully.
@@ -198,7 +198,7 @@ This step creates the pull request. It runs exactly once, here, at the end of th
 - [ ] Blocked with clear error when spec comment not found
 - [ ] Searched comments for `<!-- token-effort:planning-gh-issue -->` marker
 - [ ] Blocked with clear error when plan comment not found
-- [ ] Called `token-effort:move-issue-status <N> "Building"` in Phase 2
+- [ ] Called `token-effort-workflow:move-issue-status <N> "Building"` in Phase 2
 - [ ] Phase 2 failure logged as a warning and did not block the build
 - [ ] Phase 3 invoked before the execution skill (Phase 4)
 - [ ] Branch name derived as `<N>-<slug>` from issue number and title (lowercase, non-alphanumeric → hyphens, slug ≤ 50 chars)
@@ -211,10 +211,10 @@ This step creates the pull request. It runs exactly once, here, at the end of th
 - [ ] Suppression instruction present verbatim in the execution skill invocation prompt
 - [ ] Attempted `/verify` and skipped with named warning if absent
 - [ ] Performed inline simplify pass after verify; reported a summary
-- [ ] Invoked `token-effort:reviewing-code-systematically`
+- [ ] Invoked `token-effort-workflow:reviewing-code-systematically`
 - [ ] Addressed BLOCK or NEEDS_CHANGES findings before continuing past Phase 7
 - [ ] Performed inline security review after code review; reported a summary
-- [ ] Invoked `token-effort:recording-decisions` and blocked with error message if not available
+- [ ] Invoked `token-effort-workflow:recording-decisions` and blocked with error message if not available
 - [ ] Did not proceed to Phase 9 when `recording-decisions` was unavailable
 - [ ] Invoked `superpowers:finishing-a-development-branch` exactly once, at Phase 10
 - [ ] `finishing-a-development-branch` was NOT called by the execution skills in Phase 4
