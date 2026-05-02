@@ -10,23 +10,32 @@ user-invocable: true
 
 Applies the [Karpathy "autoresearch" pattern](https://github.com/karpathy/autoresearch) to skill and agent definitions. Instead of tweaking ML training code, it mutates `SKILL.md` / agent `.md` files and scores each candidate against committed eval cases. Run for a single cycle (manual) or many cycles (autonomous).
 
-**Usage:** `/run-training <name>` or `/run-training agent:<name>`
+**Usage:** `/run-training plugins/<plugin>/skills/<name>/SKILL.md` or `/run-training plugins/<plugin>/agents/<name>.md`
+
+> **Note:** The old shorthand forms (`/run-training <name>` and `/run-training agent:<name>`) are no longer supported. Always supply the full plugin-relative path.
 
 ## Phase 1 — Target
 
-Resolve paths from the user's argument:
+Resolve paths from the user's argument by parsing the plugin, type, and name from the supplied path:
 
-| Input | Definition file | Evals directory |
-|-------|----------------|-----------------|
-| `starting-git-branch` | `plugins/token-effort/skills/starting-git-branch/SKILL.md` | `training/skills/starting-git-branch/` |
-| `agent:reviewer-docs` | `plugins/token-effort/agents/reviewer-docs.md` | `training/agents/reviewer-docs/` |
+| Input | Plugin | Type | Name | Definition file | Evals directory |
+|-------|--------|------|------|----------------|-----------------|
+| `plugins/workflow/skills/brainstorming-gh-issue/SKILL.md` | `workflow` | `skills` | `brainstorming-gh-issue` | `plugins/workflow/skills/brainstorming-gh-issue/SKILL.md` | `training/workflow/skills/brainstorming-gh-issue/` |
+| `plugins/labs/agents/skill-creator-engineer.md` | `labs` | `agents` | `skill-creator-engineer` | `plugins/labs/agents/skill-creator-engineer.md` | `training/labs/agents/skill-creator-engineer/` |
+
+Parse rules:
+- **Definition file**: the argument as supplied verbatim
+- **Plugin**: second path segment (e.g. `plugins/<plugin>/...`)
+- **Type**: third path segment — `skills` or `agents`
+- **Name**: for skills, the fourth segment; for agents, the filename without `.md`
+- **Evals directory**: `training/<plugin>/<type>/<name>/`
 
 If the definition file is missing, **stop and report the error**. Do not proceed.
 
 ## Phase 2 — Eval Setup
 
-- **No `.md` eval files exist** in `training/<type>/<name>/` (excluding `.training-results/`): auto-generate 3–5 starter eval cases from the definition. Display them to the user. **Wait for approval/edits before continuing.**
-- **Evals already exist**: load all `.md` files from `training/<type>/<name>/` (excluding `.training-results/`). Report count to user.
+- **No `.md` eval files exist** in `training/<plugin>/<type>/<name>/` (excluding `.training-results/`): auto-generate 3–5 starter eval cases from the definition. Display them to the user. **Wait for approval/edits before continuing.**
+- **Evals already exist**: load all `.md` files from `training/<plugin>/<type>/<name>/` (excluding `.training-results/`). Report count to user.
 
 ### Eval filename conventions
 
@@ -53,11 +62,11 @@ Plain markdown, no frontmatter:
 
 ## Phase 3 — Baseline
 
-1. **Clean up any previous run.** If `training/<type>/<name>/.training-results/` already exists, delete the entire directory and inform the user: "Removed stale `.training-results/` directory from a previous run." This prevents old state, candidates, or results from polluting the new session.
+1. **Clean up any previous run.** If `training/<plugin>/<type>/<name>/.training-results/` already exists, delete the entire directory and inform the user: "Removed stale `.training-results/` directory from a previous run." This prevents old state, candidates, or results from polluting the new session.
 2. Read the current definition file.
 3. For each eval file, simulate the scenario against the current definition: mark each pass criterion ✓ (pass) or ✗ (fail).
 4. Score = criteria passed / total criteria across all evals.
-5. Write initial state to `training/<type>/<name>/.training-results/state.json`:
+5. Write initial state to `training/<plugin>/<type>/<name>/.training-results/state.json`:
    ```json
    {
      "iteration": 0,
@@ -66,7 +75,7 @@ Plain markdown, no frontmatter:
      "cycles_without_improvement": 0
    }
    ```
-6. Copy current definition to `training/<type>/<name>/.training-results/best.md`.
+6. Copy current definition to `training/<plugin>/<type>/<name>/.training-results/best.md`.
 7. Report baseline score to user.
 8. **If baseline score is 1.0**, trigger the human gate immediately before entering the loop. Show the gate summary and ask: **continue**, **stop**, or **adjust**.
 
@@ -74,9 +83,9 @@ Plain markdown, no frontmatter:
 
 **Each cycle:**
 
-1. Load state from `training/<type>/<name>/.training-results/state.json`. **Never trust memory — always read from disk.**
-2. Load all eval files from `training/<type>/<name>/` (excluding `.training-results/`).
-3. Read `training/<type>/<name>/.training-results/best.md` as the starting point.
+1. Load state from `training/<plugin>/<type>/<name>/.training-results/state.json`. **Never trust memory — always read from disk.**
+2. Load all eval files from `training/<plugin>/<type>/<name>/` (excluding `.training-results/`).
+3. Read `training/<plugin>/<type>/<name>/.training-results/best.md` as the starting point.
 4. Apply one mutation operator to produce a candidate definition (hold in memory — do not write to the live file). **Before applying the mutation, state which operator you are choosing and explain why it addresses the observed failure pattern.**
 
    | Operator | When to use |
@@ -96,7 +105,7 @@ Plain markdown, no frontmatter:
    - **Score improved**: overwrite `best.md` with candidate, update `best_score`, reset `cycles_without_improvement` to 0. Mark as **kept**.
    - **Score did not improve**: discard candidate, increment `cycles_without_improvement`. Mark as **reverted**.
    - **The live definition file is NEVER modified during the loop.**
-8. Append to `training/<type>/<name>/.training-results/results.jsonl`:
+8. Append to `training/<plugin>/<type>/<name>/.training-results/results.jsonl`:
    ```
    {"iteration": N, "score": X.XX, "best_score": X.XX, "operator": "add-constraint", "kept": true/false, "failed_criteria": ["criterion text", ...]}
    ```
@@ -123,7 +132,7 @@ Report: baseline score → best score, total cycles run, mutations kept vs rever
 Ask: "Overwrite `<definition file path>` with the best candidate from this run?"
 
 - **Yes**: write `best.md` → the live definition file. **Write to exactly the path Phase 1 resolved — do not re-resolve, expand, or infer the path from the skill name or a known install location (e.g., `~/.claude/`). The destination is fixed at Phase 1.**
-- **No**: leave the original intact. Inform the user that the best candidate was not applied, and provide both the live definition path and `training/<type>/<name>/.training-results/best.md` so they can apply it manually.
+- **No**: leave the original intact. Inform the user that the best candidate was not applied, and provide both the live definition path and `training/<plugin>/<type>/<name>/.training-results/best.md` so they can apply it manually.
 
 **Never auto-apply without explicit user approval.**
 
@@ -132,7 +141,7 @@ Ask: "Overwrite `<definition file path>` with the best candidate from this run?"
 All files are gitignored via `training/.gitignore`:
 
 ```
-training/<type>/<name>/.training-results/
+training/<plugin>/<type>/<name>/.training-results/
 ├── state.json      ← iteration, best score, cycles-without-improvement
 ├── best.md         ← best-scoring candidate seen so far
 └── results.jsonl   ← one entry per cycle

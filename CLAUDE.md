@@ -15,7 +15,7 @@ python tests/hooks/test_compound_bash_allow.py
 
 **Releasing a new version** (manual via GitHub Actions):
 - Go to Actions → Release → Run workflow → enter SemVer (e.g. `1.2.3`)
-- This patches `plugins/token-effort/.claude-plugin/plugin.json`, creates a git tag, and publishes a GitHub release.
+- This patches all three `plugin.json` files (`plugins/initialise/`, `plugins/workflow/`, `plugins/labs/`), creates a git tag, and publishes a GitHub release.
 
 **No build step.** This is a definitions-only repository (skills, agents, hooks). There's no compilation, bundling, or npm scripts.
 
@@ -24,15 +24,51 @@ python tests/hooks/test_compound_bash_allow.py
 ### Plugin layout
 
 ```
-plugins/token-effort/
-├── .claude-plugin/plugin.json   ← version and plugin metadata
-├── skills/<name>/SKILL.md       ← 12 skill definitions
-├── agents/<name>.md             ← 5 agent definitions
-└── hooks/                       ← hook handlers + hooks.json
+plugins/
+├── initialise/
+│   ├── .claude-plugin/plugin.json
+│   └── skills/
+│       ├── init-plus/SKILL.md
+│       └── configuring-dependabot/SKILL.md
+├── workflow/
+│   ├── .claude-plugin/plugin.json
+│   ├── agents/
+│   │   ├── reviewer-dead-code.md
+│   │   ├── reviewer-docs.md
+│   │   └── reviewer-newcomer.md
+│   └── skills/
+│       ├── brainstorming-gh-issue/SKILL.md
+│       ├── building-gh-issue/SKILL.md
+│       ├── computing-branch-diff/
+│       ├── move-issue-status/
+│       ├── planning-gh-issue/SKILL.md
+│       ├── propose-feature/SKILL.md
+│       ├── recording-decisions/SKILL.md
+│       ├── report-bug/SKILL.md
+│       ├── reviewing-code-systematically/SKILL.md
+│       └── triaging-gh-issues/SKILL.md
+└── labs/
+    ├── .claude-plugin/plugin.json
+    ├── agents/
+    │   ├── agent-creator-engineer.md
+    │   └── skill-creator-engineer.md
+    └── hooks/
+        ├── compound_bash_allow.py
+        └── hooks.json
 
 training/
-├── skills/<name>/               ← eval cases for each skill
-├── agents/<name>/               ← eval cases for each agent
+├── initialise/
+│   └── skills/
+│       ├── init-plus/
+│       └── configuring-dependabot/
+├── workflow/
+│   ├── skills/
+│   │   └── <skill-name>/
+│   └── agents/
+│       └── <agent-name>/
+├── labs/
+│   └── agents/
+│       └── <agent-name>/
 └── build/                       ← special training cases
 
 .claude/
@@ -40,7 +76,9 @@ training/
 └── hooks/suggest-training.py    ← PostToolUse hook: prompts to run /run-training after editing skills/agents
 ```
 
-**Key distinction:** `.claude/skills/` are local-only. `plugins/token-effort/skills/` are distributed with the plugin.
+**Key distinction:** `.claude/skills/` are local-only. `plugins/initialise/`, `plugins/workflow/`, and `plugins/labs/` contain the skills and agents distributed with each plugin.
+
+**Note:** A `base` plugin is intentionally absent — it will be introduced only when a skill or agent genuinely needs to be shared across two or more plugins.
 
 ### Issue lifecycle
 
@@ -64,7 +102,7 @@ user-invocable: true
 ---
 ```
 
-Invoked as `/token-effort:skill-name` in Claude Code sessions, or via `anthropics/claude-code-action` in GitHub Actions.
+Invoked using one of the three plugin namespaces — `/token-effort-initialise:<skill>`, `/token-effort-workflow:<skill>`, or `/token-effort-labs:<skill>` — in Claude Code sessions, or via `anthropics/claude-code-action` in GitHub Actions.
 
 ### Agents
 
@@ -97,7 +135,7 @@ initialPrompt: "REQUIRED SETUP — ..."
 3. Score mutated version; keep if improved.
 4. Human gates every 5 cycles or on perfect score.
 
-Eval files live in `training/skills/<name>/` and `training/agents/<name>/`. Format:
+Eval files live in `training/<plugin>/<type>/<name>/` (e.g. `training/workflow/skills/brainstorming-gh-issue/`). Format:
 
 ```markdown
 ## Scenario
