@@ -10,6 +10,8 @@ user-invocable: true
 
 Fetches all open GitHub issues, classifies each one by reading its content and searching for duplicates, then determines whether to apply a new label or correct an existing one. Issues that already have the correct label are skipped silently. Presents a summary of proposed changes and waits for user confirmation before applying any writes (unless running in GitHub Actions, where it applies changes immediately). For each issue, a confidence score is produced reflecting how certain the classification is.
 
+> **Note:** Status advancement is not part of triage. Each downstream skill (e.g. `brainstorming-gh-issue`, `planning-gh-issue`, `building-gh-issue`) is responsible for pulling the issue into its own project board column when it begins.
+
 **Usage:** `/triaging-gh-issues`
 
 ## When to Use

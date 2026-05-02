@@ -79,7 +79,9 @@ This returns a JSON object with `number`, `title`, `body`, `comments` (array of 
   - **Spec comment found:** extract the full body as the prior spec. This is a continuation — load both the issue context and the prior spec into Phase 3.
   - **No spec comment found** (label added manually): note "The `pending-review` label was present but no prior spec comment was found. Starting fresh." and proceed as a fresh brainstorm.
 
-After detecting state, invoke `token-effort-workflow:move-issue-status <N> "Brainstorming"` via the Skill tool to pull the issue into the correct project board column. Non-fatal — if it fails, log a warning and continue.
+#### Step 2c — Pull issue into project board status
+
+Regardless of which branch was taken above, invoke `token-effort-workflow:move-issue-status <N> "Brainstorming"` via the Skill tool to pull the issue into the correct project board column. Non-fatal — if it fails, log a warning and continue.
 
 ### Phase 3 — Handoff to `superpowers:brainstorming`
 
@@ -208,7 +210,7 @@ After Phase 4 completes, report:
 - [ ] When no args given and branch has no digits: stopped with a message containing the suggested invocation `/brainstorming-gh-issue <N>`
 - [ ] When multiple issue numbers given as args: asked the user to choose one before fetching any issue
 - [ ] Fetched the issue with `gh issue view --json number,title,body,comments,labels`
-- [ ] Invoked `token-effort-workflow:move-issue-status <N> "Brainstorming"` in Phase 2 after detecting state (non-fatal on failure)
+- [ ] Invoked `token-effort-workflow:move-issue-status <issue-number> "Brainstorming"` in Phase 2 after detecting state (non-fatal on failure)
 - [ ] Identified the absence of `pending-review` label and proceeded as a fresh brainstorm
 - [ ] Identified the presence of `pending-review` label and searched comments for `<!-- brainstorming-gh-issue:spec -->`
 - [ ] In re-entry mode with spec found: loaded both issue context and prior spec into Phase 3
