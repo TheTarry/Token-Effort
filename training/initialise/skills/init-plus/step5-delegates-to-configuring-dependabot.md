@@ -9,7 +9,7 @@ files, and does NOT write dependabot.yml itself. All of that logic is handled by
 sub-skill.
 
 ## Pass Criteria
-- [ ] Invoked token-effort:configuring-dependabot via the Skill tool
+- [ ] Invoked token-effort-initialise:configuring-dependabot via the Skill tool
 - [ ] Did NOT perform any ecosystem scanning itself
 - [ ] Did NOT write .github/dependabot.yml directly
 - [ ] Did NOT check for existing .github/dependabot.yml or .github/dependabot.yaml itself
