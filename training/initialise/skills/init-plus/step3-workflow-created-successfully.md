@@ -1,5 +1,5 @@
 ## Scenario
-The user selects "3". No .github/workflows/triaging-gh-issues.yml exists. The user
+The user selects "3". No .github/workflows/triaging-gh-issue.yml exists. The user
 confirms prerequisites are set up.
 
 ## Expected Behavior
@@ -10,8 +10,8 @@ the workflow file.
 ## Pass Criteria
 - [ ] Asked about prerequisites and received confirmation before writing
 - [ ] Did NOT show an overwrite warning (file didn't exist)
-- [ ] Wrote .github/workflows/triaging-gh-issues.yml
+- [ ] Wrote .github/workflows/triaging-gh-issue.yml
 - [ ] Written workflow contains "anthropics/claude-code-action@v1"
 - [ ] Written workflow contains "actions/create-github-app-token@v3"
-- [ ] Written workflow contains "token-effort-workflow:triaging-gh-issues" in the prompt
+- [ ] Written workflow contains "token-effort-workflow:triaging-gh-issue" in the prompt
 - [ ] Completion summary reports the workflow was created

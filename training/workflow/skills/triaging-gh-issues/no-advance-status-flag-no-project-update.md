@@ -1,6 +1,6 @@
 ## Scenario
 
-GHA context (`GITHUB_ACTIONS=true`, `GITHUB_REPOSITORY=HeadlessTarry/Token-Effort`). Invoked as `/triaging-gh-issues` — WITHOUT the `--advance-status` flag. One unlabelled open issue (#42) has the title "App crashes with NullPointerException on startup" and a body containing a full stack trace. The classification is unambiguously `bug` with confidence above 80%.
+GHA context (`GITHUB_ACTIONS=true`, `GITHUB_REPOSITORY=HeadlessTarry/Token-Effort`). Invoked as `/triaging-gh-issue` — WITHOUT the `--advance-status` flag. One unlabelled open issue (#42) has the title "App crashes with NullPointerException on startup" and a body containing a full stack trace. The classification is unambiguously `bug` with confidence above 80%.
 
 The issue belongs to exactly one GitHub project (project 1, "Roadmap"). Its current status is "New" — the first column. All conditions for a project status update would be met if `--advance-status` had been passed.
 

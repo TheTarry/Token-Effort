@@ -16,4 +16,4 @@ confidence is 90%.
 - [ ] No confirmation prompt or summary table is displayed.
 - [ ] `gh issue edit --add-label enhancement` is called for issue #5.
 - [ ] `gh issue comment` is called exactly once.
-- [ ] The comment body starts with `<!-- triaging-gh-issues:summary -->`.
+- [ ] The comment body starts with `<!-- triaging-gh-issue:summary -->`.

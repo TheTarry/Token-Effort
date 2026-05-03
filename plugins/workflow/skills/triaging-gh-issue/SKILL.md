@@ -1,5 +1,5 @@
 ---
-name: triaging-gh-issues
+name: triaging-gh-issue
 description: Use when the user wants to triage a GitHub issue in the current repository — labelling unlabelled issues and correcting obviously wrong labels. Also runs automatically via GitHub Actions when a new issue is opened.
 user-invocable: true
 ---
@@ -12,7 +12,7 @@ Fetches a single GitHub issue, classifies it by reading its content and searchin
 
 > **Note:** Status advancement is not part of triage. Each downstream skill (e.g. `brainstorming-gh-issue`, `planning-gh-issue`, `building-gh-issue`) is responsible for pulling the issue into its own project board column when it begins.
 
-**Usage:** `/triaging-gh-issues [<issue-number>]`
+**Usage:** `/triaging-gh-issue [<issue-number>]`
 
 ## When to Use
 
@@ -46,7 +46,7 @@ Assign exactly one label per issue. When an issue could fit multiple labels, cho
 
 **Resolve the issue number:**
 
-If an issue number was provided as an argument (e.g. `/triaging-gh-issues 42` or `/triaging-gh-issues #42`), extract it and strip any leading `#`. That is the resolved issue number. Do not call `git branch --show-current`.
+If an issue number was provided as an argument (e.g. `/triaging-gh-issue 42` or `/triaging-gh-issue #42`), extract it and strip any leading `#`. That is the resolved issue number. Do not call `git branch --show-current`.
 
 If no argument was provided, run:
 
@@ -61,7 +61,7 @@ Extract the **first** sequence of digits from the branch name. Examples:
 
 If neither args nor branch name yields a number, stop with:
 
-> "No issue number found in args or branch name. Run as `/triaging-gh-issues <N>`."
+> "No issue number found in args or branch name. Run as `/triaging-gh-issue <N>`."
 
 **Resolve the repository:**
 
@@ -171,7 +171,7 @@ Note the current labels from Phase 2:
 **Post comment** (always, for every issue — regardless of label action):
 
 ```bash
-gh issue comment <N> --body "<!-- triaging-gh-issues:summary -->
+gh issue comment <N> --body "<!-- triaging-gh-issue:summary -->
 ## 🤖 Triage Summary
 
 **Label applied:** \`<label>\`
@@ -210,7 +210,7 @@ Triage complete:
 - **Skipping the comment when confidence is low** — the comment is always posted; only the label write is skipped at < 70% confidence.
 - **Skipping the comment when label already matches** — if the current label already matches, skip the label write but still post the comment.
 - **Applying changes before confirmation in interactive context** — Phase 5 must not run until Phase 4 confirms (unless in GHA).
-- **Omitting the `<!-- triaging-gh-issues:summary -->` marker** — the comment must start with this HTML comment on its own line.
+- **Omitting the `<!-- triaging-gh-issue:summary -->` marker** — the comment must start with this HTML comment on its own line.
 - **Using old comment format** — do not use "**Label updated by automated triage**". Always use the `## 🤖 Triage Summary` format.
 - **Using shell expansion syntax** — never use `${VARIABLE}` or any `${...}` form. Use `printenv VARIABLE` instead.
 - **Using MCP tools** — all issue operations must use `gh` CLI commands.
@@ -234,7 +234,7 @@ Triage complete:
 - [ ] In interactive: "no" response stopped execution with "No changes applied. Triage discarded."
 - [ ] Label write skipped when confidence < 70%; comment still posted
 - [ ] Label write skipped when current label already matches; comment still posted
-- [ ] `gh issue comment` called with `<!-- triaging-gh-issues:summary -->` marker as the first line
+- [ ] `gh issue comment` called with `<!-- triaging-gh-issue:summary -->` marker as the first line
 - [ ] Triage summary comment always posted (including for first-time label applications)
 - [ ] No `mcp__` tool called
 - [ ] No `${...}` shell expansion used

@@ -14,7 +14,7 @@ not a bug. `GITHUB_ACTIONS=true`, `GITHUB_REPOSITORY=HeadlessTarry/Token-Effort`
 
 - [ ] `gh issue edit` removes `bug` and adds `documentation`.
 - [ ] `gh issue comment` is called exactly once.
-- [ ] The comment body starts with `<!-- triaging-gh-issues:summary -->`.
+- [ ] The comment body starts with `<!-- triaging-gh-issue:summary -->`.
 - [ ] The comment includes `## 🤖 Triage Summary` heading.
 - [ ] The comment includes `**Label applied:** \`documentation\``.
 - [ ] The comment includes a `**Confidence:**` line with a percentage.
