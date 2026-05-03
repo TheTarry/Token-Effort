@@ -79,6 +79,8 @@ def has_pending_review_label(issue_number: int) -> bool:
         ["gh", "issue", "view", str(issue_number), "--json", "labels"],
         capture_output=True, text=True, encoding="utf-8",
     )
+    if result.returncode != 0 or not result.stdout.strip():
+        return False
     data = json.loads(result.stdout)
     return any(label.get("name") == "pending-review" for label in data.get("labels", []))
 
