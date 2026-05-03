@@ -104,9 +104,14 @@ Write `.github/workflows/triaging-gh-issues.yml`:
 name: Triage GitHub Issues
 # yamllint disable-line rule:truthy
 on:
-  schedule:
-    - cron: '0 4 * * 1'
+  issues:
+    types: [opened]
   workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to triage'
+        required: true
+        type: number
 
 jobs:
   triage:
@@ -134,12 +139,12 @@ jobs:
           plugins: token-effort-workflow
           prompt: |
             Use the `token-effort-workflow:triaging-gh-issues` skill.
-            Triage all open issues in this repository.
+            Triage issue #${{ github.event.issue.number || inputs.issue_number }}.
 
             Upon completion, write a brief markdown summary of your activity to the GitHub Actions step summary using: SUMMARY_FILE=$(printenv GITHUB_STEP_SUMMARY) && echo "**[Claude]** {Activity summary}" >> "$SUMMARY_FILE"
           claude_args: >-
             --model sonnet
-            --allowedTools Skill,Bash(printenv *),Bash(git remote get-url *),Bash(gh issue list *),Bash(gh issue view *),Bash(gh search issues *),Bash(gh issue edit *),Bash(gh issue comment *)
+            --allowedTools Skill,Bash(printenv *),Bash(git remote get-url *),Bash(git branch --show-current),Bash(gh issue view *),Bash(gh search issues *),Bash(gh issue edit *),Bash(gh issue comment *)
 ```
 
 ---
