@@ -1,20 +1,18 @@
 ## Scenario
 
-Two open issues exist: one is unlabelled and clearly a bug (app hangs on file upload), and one is labelled `enhancement` but clearly describes a crash (unambiguously a bug, so action is `reclassify`). The `GITHUB_ACTIONS` environment variable is NOT set. After the summary table is shown, the user responds "no".
+Issue #4 is unlabelled and describes a feature request. `GITHUB_ACTIONS` is not set.
+Classification confidence is 85%. The user responds "no" to the confirmation prompt.
 
 ## Expected Behaviour
 
-- Both issues appear in the summary table (one `apply`, one `reclassify`).
-- The user is prompted for confirmation and responds "no".
-- The skill prints a cancellation message such as "No changes applied. Triage discarded."
-- `gh issue edit` is never called for either issue.
-- `gh issue comment` is never called.
+- A confirmation prompt is shown with the proposed label and rationale.
+- The user responds "no".
+- No writes occur: neither `gh issue edit` nor `gh issue comment` is called.
+- The skill reports "No changes applied. Triage discarded." and stops.
 
 ## Pass Criteria
 
-- [ ] Both issues are included in the summary table before the user is prompted.
-- [ ] The skill prompts the user and waits for a response before writing anything.
-- [ ] `gh issue edit` is never called after the user responds "no".
-- [ ] `gh issue comment` is never called.
-- [ ] A cancellation or "no changes" message is displayed to the user.
-- [ ] Final report states "No changes applied. Triage discarded."
+- [ ] A confirmation prompt is displayed before any write.
+- [ ] After "no", `gh issue edit` is NOT called.
+- [ ] After "no", `gh issue comment` is NOT called.
+- [ ] The skill outputs a message indicating no changes were applied.

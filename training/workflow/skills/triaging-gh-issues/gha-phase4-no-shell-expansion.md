@@ -1,19 +1,19 @@
 ## Scenario
 
 The skill is invoked in a GitHub Actions environment (`GITHUB_ACTIONS=true`,
-`GITHUB_REPOSITORY=HeadlessTarry/Token-Effort`). One unlabelled open issue exists: a
-feature request to add CSV export. The skill reaches Phase 4 and must decide whether
-to skip the confirmation step.
+`GITHUB_REPOSITORY=HeadlessTarry/Token-Effort`). After classifying the issue, the
+skill must check GHA context in Phase 4 to decide whether to skip confirmation.
 
 ## Expected Behaviour
 
-- The skill checks `GITHUB_ACTIONS` using an expansion-free method such as
-  `printenv GITHUB_ACTIONS` — NOT `echo "${GITHUB_ACTIONS:-}"` or any `${...}` form.
-- The check succeeds, Phase 5 is skipped, and `gh issue edit --add-label` is called directly.
+- The skill checks `GITHUB_ACTIONS` in Phase 4 using `printenv GITHUB_ACTIONS` — NOT
+  any `${...}` form.
+- The check succeeds and Phase 4 confirmation is skipped.
+- Phase 5 writes proceed without a user prompt.
 
 ## Pass Criteria
 
-- [ ] The bash command used to check `GITHUB_ACTIONS` in Phase 4 does NOT contain `${` shell expansion syntax
-- [ ] An expansion-free method (e.g. `printenv GITHUB_ACTIONS`) is used
-- [ ] Phase 5 is skipped (no confirmation table shown)
-- [ ] `gh issue edit --add-label` is called to apply the label without waiting for user input
+- [ ] The bash command used in Phase 4 does NOT contain `${` shell expansion syntax.
+- [ ] `printenv GITHUB_ACTIONS` (or an equivalent expansion-free command) is used.
+- [ ] No confirmation prompt is shown.
+- [ ] Phase 5 writes (`gh issue edit`, `gh issue comment`) proceed without user input.
