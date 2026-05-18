@@ -4,7 +4,7 @@ The user selects "5". The repository has package.json and .github/workflows/ci.y
 
 ## Expected Behavior
 Step 5 delegates entirely to configuring-dependabot via the Skill tool.
-The init-plus skill does NOT scan for ecosystems, does NOT check for existing dependabot
+The repo-setup skill does NOT scan for ecosystems, does NOT check for existing dependabot
 files, and does NOT write dependabot.yml itself. All of that logic is handled by the
 sub-skill.
 

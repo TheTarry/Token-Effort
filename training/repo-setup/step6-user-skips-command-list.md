@@ -9,6 +9,6 @@ does NOT write any file, and notes the outcome in the summary. The skill does no
 ## Pass Criteria
 - [ ] Asked the user for verification commands
 - [ ] Did NOT write `.opencode/skills/verify/SKILL.md`
-- [ ] Printed "`/verify` not configured — run `/init-plus` again when you're ready" (or equivalent)
+- [ ] Printed "`/verify` not configured — run `/repo-setup` again when you're ready" (or equivalent)
 - [ ] Noted "`/verify`: skipped (no commands provided)" (or equivalent) in the completion summary
 - [ ] Did NOT halt the skill after the skip
