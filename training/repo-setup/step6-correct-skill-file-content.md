@@ -10,7 +10,6 @@ report if any command fails.
 
 ## Pass Criteria
 - [ ] Written file includes YAML frontmatter with `name: verify`
-- [ ] Written file includes `user-invocable: true` in frontmatter
 - [ ] Description field mentions verifying, running checks, or confirming changes work
 - [ ] Commands appear as a numbered ordered list (1. 2. 3.)
 - [ ] File includes instruction to stop and report failure if any command fails
