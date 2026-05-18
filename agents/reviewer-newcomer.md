@@ -68,6 +68,12 @@ VERDICT: PASS | NEEDS_CHANGES | BLOCK | SKIP
 (repeat for each positive)
 ```
 
+**SKIP verdict output constraint**: When VERDICT is SKIP, output ONLY the VERDICT line and the skip reason message. Do NOT include the Findings section or Positive Elements section. The output should be:
+```
+VERDICT: SKIP
+<reason message requesting scoped list or noting auto-generated/binary>
+```
+
 ### VERDICT rules
 
 | Verdict | When to use |
