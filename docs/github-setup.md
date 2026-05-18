@@ -10,55 +10,16 @@ This guide covers the GitHub infrastructure required to use the skills and agent
 
 Use this checklist to see what you still need to set up. Each item links to the detailed section below.
 
-- [ ] [GitHub organisation](#1-github-organisation) (or personal account — see [Personal Account Alternative](#personal-account-alternative))
-- [ ] ["Project Manager" GitHub App](#2-project-manager-github-app) created and installed on the repository
+- [ ] [GitHub organisation](#1-github-organisation) (or personal account)
 - [ ] [GitHub Project board](#3-github-project-board) with Status field: `New` → `Brainstorming` → `Building` → `Done`
 - [ ] [Project board linked to the repository](#3-github-project-board) (Settings → Linked repositories)
 - [ ] [Issue labels](#4-issue-labels): `enhancement`, `bug`, `documentation`, `duplicate`, `pending-review`
-- [ ] [Repository secret](#5-repository-secrets--variables): `PROJECT_MANAGER_PRIVATE_KEY`
 - [ ] [Repository secret](#5-repository-secrets--variables): `OPENCODE_API_KEY`
-- [ ] [Repository variable](#5-repository-secrets--variables): `PROJECT_MANAGER_CLIENT_ID`
 - [ ] [Triage workflow](#6-triage-workflow) added to `.github/workflows/`
 
 ---
 
-## 🏢 1. GitHub Organisation
-
-A GitHub organisation is required because GitHub Apps cannot be granted access to Projects under a personal account — this is a platform limitation.
-
-> **On a personal account?** Skip this section and see [Personal Account Alternative](#personal-account-alternative) instead.
-
-**Steps:**
-
-1. Follow [GitHub's documentation to create an organisation](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch).
-2. Transfer or create your repository under the organisation.
-
----
-
-## 🤖 2. Project Manager GitHub App
-
-The Project Manager GitHub App is used by the triage workflow to authenticate with elevated permissions for both issue management and project board operations — permissions that the default `GITHUB_TOKEN` does not provide.
-
-> **On a personal account?** Skip this section and see [Personal Account Alternative](#personal-account-alternative) instead.
-
-**Steps:**
-
-1. Go to your organisation's **Settings** → **Developer settings** → **GitHub Apps** → **New GitHub App**.
-2. Fill in the required fields:
-   - **GitHub App name:** `Project Manager` (or any name you prefer)
-   - **Homepage URL:** your repository URL (e.g. `https://github.com/your-org/your-repo`)
-3. Under **Webhook**, uncheck **Active** — the webhook is not needed.
-4. Set the following permissions:
-   - **Repository permissions → Issues:** Read & Write
-   - **Organization permissions → Projects:** Read & Write
-5. Click **Create GitHub App**.
-6. On the app's settings page, note the **Client ID** (labelled `Client ID`, formatted as `Iv1.xxxxxxxxxx`) — you will need it later. This is distinct from the numeric **App ID** shown just above it; the workflow requires the Client ID.
-7. Scroll down to **Private keys** and click **Generate a private key**. A `.pem` file will download — keep it safe.
-8. Go to the app's **Install App** tab and install it on your target repository.
-
----
-
-## 📋 3. GitHub Project Board
+## 📋 2. GitHub Project Board
 
 The project board tracks issue status through the workflow lifecycle. The triage skill reads and writes the `Status` field to move issues between columns automatically.
 
@@ -78,7 +39,7 @@ The project board tracks issue status through the workflow lifecycle. The triage
 
 ---
 
-## 🏷️ 4. Issue Labels
+## 🏷️ 3. Issue Labels
 
 These labels are used by the triage skill to classify issues by type. Run the following commands against your repository to create them:
 
@@ -100,84 +61,29 @@ Alternatively, you can create labels via **Settings** → **Labels** in the GitH
 
 ---
 
-## 🔐 5. Repository Secrets & Variables
+## 🔐 4. Repository Secrets & Variables
 
-The triage workflow uses one repository variable and two secrets. Add them under **Settings** → **Secrets and variables** → **Actions**.
-
-### Variables (Variables tab)
-
-| Variable | Value |
-|----------|-------|
-| `PROJECT_MANAGER_CLIENT_ID` | The **Client ID** from the GitHub App General settings page (step 2.6 above — the `Iv1.` prefixed string, not the numeric App ID) |
+The triage workflow uses one repository secret. Add it under **Settings** → **Secrets and variables** → **Actions** → **Secrets**.
 
 ### Secrets (Secrets tab)
 
 | Secret | Value |
 |--------|-------|
-| `PROJECT_MANAGER_PRIVATE_KEY` | Full contents of the `.pem` file downloaded in step 2.7 above |
-| `OPENCODE_API_KEY` | Your API key — generated during setup. See the platform documentation for your version. |
+| `OPENCODE_API_KEY` | Your API key — generated during setup. See your OpenCode documentation for key generation. |
 
-> **On a personal account?** Replace the `PROJECT_MANAGER_CLIENT_ID` variable and `PROJECT_MANAGER_PRIVATE_KEY` secret with a single `GITHUB_PAT` secret — see [Personal Account Alternative](#personal-account-alternative).
+> **Note:** The workflow uses `${{ secrets.GITHUB_TOKEN }}` automatically — no additional token configuration is needed.
 
 ---
 
-## ⚙️ 6. Triage Workflow
+## ⚙️ 5. Triage Workflow
 
-The triage workflow runs automatically every Monday at 4am UTC and can also be triggered manually. It authenticates as the Project Manager GitHub App, then invokes the `triaging-gh-issue` skill, which labels issues by type, detects duplicates, and advances issue statuses on the project board.
-
-> **On a personal account?** See [Personal Account Alternative](#personal-account-alternative) for the workflow changes needed.
+The triage workflow runs when a new issue is opened and can also be triggered manually. It invokes the `triaging-gh-issue` skill, which labels issues by type, detects duplicates, and advances issue statuses on the project board.
 
 **Steps:**
 
-1. Download the workflow file into your repository:
+1. Add the workflow file to `.github/workflows/triaging-gh-issue.yml` in your repository. The workflow uses the `anomalyco/opencode/github` action with `OPENCODE_API_KEY` and `GITHUB_TOKEN` secrets.
 
-   ```bash
-   mkdir -p .github/workflows && curl -sSL https://raw.githubusercontent.com/HeadlessTarry/Token-Effort/main/.github/workflows/triaging-gh-issue.yml -o .github/workflows/triaging-gh-issue.yml
-   ```
-
-   Alternatively, view the [latest version on main](https://github.com/HeadlessTarry/Token-Effort/blob/main/.github/workflows/triaging-gh-issue.yml) and copy its contents manually into `.github/workflows/triaging-gh-issue.yml` in your repository.
-
-2. Leave the `plugin_marketplaces` and `plugins` inputs as-is — they point to the plugin source and should not be changed.
-
----
-
-## 👤 Personal Account Alternative
-
-GitHub Apps require organisation-level permissions to access GitHub Projects. Personal accounts do not support this permission scope. If you are working under a personal account, use a Personal Access Token (PAT) instead.
-
-**Why the limitation exists:** GitHub App permissions for Projects are only available at the organisation level. Personal accounts have no equivalent permission scope.
-
-**Alternative setup:**
-
-1. Create a classic Personal Access Token with the `repo` and `project` scopes:
-   - Go to **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)** → **Generate new token**.
-   - Select scopes: `repo` (full control) and `project` (full control of projects).
-2. Store the PAT as a repository secret named `GITHUB_PAT` (under **Settings** → **Secrets and variables** → **Actions** → **Secrets**).
-3. Update the triage workflow — remove the `🔑 Authenticate as Project Manager` step (the `actions/create-github-app-token` block) and change the `github_token` input:
-
-   Remove this block entirely:
-
-   ```yaml
-         - name: 🔑 Authenticate as Project Manager
-           id: project-manager-token
-           uses: actions/create-github-app-token@v3
-           with:
-             client-id: ${{ vars.PROJECT_MANAGER_CLIENT_ID }}
-             private-key: ${{ secrets.PROJECT_MANAGER_PRIVATE_KEY }}
-             owner: ${{ github.repository_owner }}
-   ```
-
-   Then change the `github_token` input in the `Run skill` step:
-
-   ```yaml
-   # Change from:
-   github_token: ${{ steps.project-manager-token.outputs.token }}
-
-   # To:
-   github_token: ${{ secrets.GITHUB_PAT }}
-   ```
-
-> **Security note:** Classic PATs are broadly scoped compared to GitHub Apps. Rotate them regularly and use the minimum required scopes.
+2. The workflow triggers automatically on new issues (`issues: types: [opened]`) and supports manual triggering via `workflow_dispatch` with an `issue_number` input.
 
 ---
 
@@ -196,8 +102,6 @@ gh project list --owner <your-org>
 # or pass --repo explicitly)
 gh workflow run triaging-gh-issue.yml --repo <your-org>/<your-repo>
 ```
-
-After triggering the workflow, open the **Actions** tab in your repository and select the **Triage GitHub Issue** run. The workflow will post a markdown summary to the step summary once it completes — a successful run will show a brief activity report.
 
 ---
 
